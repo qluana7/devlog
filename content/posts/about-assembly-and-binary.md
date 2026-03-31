@@ -1,5 +1,5 @@
 ---
-title: "About Assembly and Machine Code"
+title: "어셈블리와 기계어에 관해서"
 slug: "about-assembly-and-binary"
 date: "2023-06-10"
 excerpt: "최근 IR -> Binary 프로젝트를 작업하면서 Instruction이 Byte코드로 변환되는 과정을 공부했었다. 여러 블로그와 인텔 문서까지 봤는데 좀 쉽게 설명하면서 내용을 정리하고자 올린다. ( Intel&reg; 64 and IA-32 Architectures"
@@ -14,8 +14,8 @@ tags:
   - "바이트코드"
 ---
 
-<p>최근 IR -> Binary 프로젝트를 작업하면서 Instruction이 Byte코드로 변환되는 과정을 공부했었다.<br><br>여러 블로그와 인텔 문서까지 봤는데 좀 쉽게 설명하면서 내용을 정리하고자 올린다.<br>(<a>Intel&reg; 64 and IA-32 Architectures Software Developer Manuals</a> < Intel 메뉴얼)</p>
-<p>(<a>http://ref.x86asm.net/coder.html</a> < opcode 목록 *AVX 미포함* )<br><br>어셈블리와 기계어가 왜 1:1 대응인지 알아보러 가보자<br><br></p>
+<p>최근 IR -> Binary 프로젝트를 작업하면서 Instruction이 Byte코드로 변환되는 과정을 공부했었다.<br><br>여러 블로그와 인텔 문서까지 봤는데 좀 쉽게 설명하면서 내용을 정리하고자 올린다.<br>(<a href="https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html" target="_blank" rel="noopener">Intel&reg; 64 and IA-32 Architectures Software Developer Manuals</a> < Intel 메뉴얼)</p>
+<p>(<a href="http://ref.x86asm.net/coder.html" target="_blank" rel="noopener">http://ref.x86asm.net/coder.html</a> < opcode 목록 *AVX 미포함* )<br><br>어셈블리와 기계어가 왜 1:1 대응인지 알아보러 가보자<br><br></p>
 <h2>Instruction Format</h2>
 <p><br>Instruction의 구조는 간단하면서도 생각외로 복잡하다. 다음 표를 보자</p>
 <p>
@@ -133,7 +133,7 @@ xor rax, [rbp+rcx*4+0x8]
 <p>이 외에도 많은 예시가 있겠지만, 직접 해보면서 알아보도록 하자.</p>
 <p><br></p>
 <p>nasm, gas, masm 등으로 컴파일 후 나온 object 파일을 objdump로 뜯어보면 된다.</p>
-<p>윈도우와 같이 어려운 상황이면 (<a>https://godbolt.org/</a>)를 이용하자.</p>
+<p>윈도우와 같이 어려운 상황이면 (<a href="https://godbolt.org/" target="_blank" rel="noopener">https://godbolt.org/</a>)를 이용하자.</p>
 <p>Assembly로 맞추고 Output에서 Link to binary를 클릭하면 바이트 코드가 나온다.</p>
 <p>또한 컴파일 옵션에 (nasm 기준) -f elf32, -f elf64 등으로 32, 64bit 조절이 가능하다.</p>
 <p><br></p>

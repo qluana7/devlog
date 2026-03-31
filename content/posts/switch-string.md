@@ -1,5 +1,5 @@
 ---
-title: "Switch (string) Performance in C#"
+title: "Switch (string) 성능에 관한 고찰"
 slug: "switch-string"
 date: "2022-08-08"
 excerpt: "C# 타입 키워드에는 여러개가 존재한다. 그 중, C/C++, Java에 없는 키워드가 하나 존재하는데, 바로 오늘의 주인공 string이다. C/C++에서는 사용할 수 없는 기능, switch문에 string을 쓰는 방식에 대해 알아보고자 한다. char* 또는 st"
@@ -34,7 +34,7 @@ tags:
 <p><br></p>
 <p>C#에서 switch string을 처리하는 방식을 알아보도록 하자.</p>
 <p><br></p>
-<p>먼저, <a>Roslyn</a>. (ms에서 만든 오픈소스 .NET 컴파일러이다)</p>
+<p>먼저, <a title="Roslyn" href="https://github.com/dotnet/roslyn" target="_blank" rel="noopener">Roslyn</a>. (ms에서 만든 오픈소스 .NET 컴파일러이다)</p>
 <p>Roslyn의 경우, 두 가지 경우로 나뉘게 된다.</p>
 <p>(케이스가 적은 경우, 케이스가 많은 경우)</p>
 <p><br></p>
@@ -62,4 +62,4 @@ new Dictionary<string, int>() {
 <p>정리하면,</p>
 <blockquote>switch(string)의 경우, 거의 O(1) 수준의 성능을 내기는 하나, 일반적인 상수의 switch보다는 안정성을 기대할 수는 없다.</blockquote>
 <p><br></p>
-<p>정보 출처 : <a>https://forum.unity.com/threads/how-slow-are-case-switches-using-strings.428283/</a></p>
+<p>정보 출처 : <a href="https://forum.unity.com/threads/how-slow-are-case-switches-using-strings.428283/" target="_blank" rel="noopener">https://forum.unity.com/threads/how-slow-are-case-switches-using-strings.428283/</a></p>

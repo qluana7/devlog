@@ -7,6 +7,8 @@ const searchMeta = document.getElementById('search-meta');
 const searchResults = document.getElementById('search-results');
 const defaultPosts = document.getElementById('default-posts');
 
+const PAGE_SIZE = 30;
+
 function escapeHtml(value) {
   return String(value)
     .replaceAll('&', '&amp;')
@@ -81,6 +83,17 @@ function scoreRegexPost(post, regex) {
   if (tagsHit) score += 25;
   if (contentHit) score += 15;
   return score;
+}
+
+function renderLimitedSearchTags(tags) {
+  const visible = (tags || []).slice(0, 3);
+  const hiddenCount = Math.max(0, (tags || []).length - visible.length);
+  const pills = visible
+    .map((tag) => '<a class="px-2 py-0.5 rounded bg-accent/10 text-accent text-xs hover:bg-accent/20" href="' + root + '/tags/' + encodeURIComponent(tag) + '.html">' + escapeHtml(tag) + '</a>')
+    .join('');
+  if (!hiddenCount) return pills;
+  const hiddenLabel = escapeHtml((tags || []).slice(3).join(', '));
+  return pills + '<span class="tag-overflow-tooltip px-2 py-0.5 rounded bg-border/30 text-subtle text-xs" data-tooltip="' + hiddenLabel + '" tabindex="0">+' + hiddenCount + '</span>';
 }
 
 function highlightSnippet(text, query, regexMode) {
@@ -164,6 +177,60 @@ async function setupSearch() {
 
   const response = await fetch(root + '/posts.json');
   const posts = await response.json();
+  let searchPage = 1;
+  let currentRanked = [];
+
+  function renderSearchPage(ranked, query, regexMode) {
+    const totalPages = Math.max(1, Math.ceil(ranked.length / PAGE_SIZE));
+    if (searchPage > totalPages) searchPage = totalPages;
+    const start = (searchPage - 1) * PAGE_SIZE;
+    const current = ranked.slice(start, start + PAGE_SIZE);
+
+    if (!current.length) {
+      searchResults.innerHTML = '<article class="post-card"><p class="text-sm text-subtle">검색 결과가 없습니다.</p></article>';
+      return;
+    }
+
+    const pages = totalPages > 1
+      ? '<nav class="mt-2 flex flex-wrap items-center gap-2">'
+        + (searchPage > 1 ? '<button type="button" data-search-page="prev" class="px-2 py-1 rounded border border-border/30 text-xs text-subtle hover:text-accent hover:border-accent/40">Prev</button>' : '')
+        + Array.from({ length: totalPages }, (_, i) => i + 1)
+          .map((page) => '<button type="button" data-search-page="' + page + '" class="px-2 py-1 rounded border text-xs '
+            + (page === searchPage ? 'bg-accent text-header border-accent' : 'border-border/30 text-subtle hover:text-accent hover:border-accent/40')
+            + '">' + page + '</button>')
+          .join('')
+        + (searchPage < totalPages ? '<button type="button" data-search-page="next" class="px-2 py-1 rounded border border-border/30 text-xs text-subtle hover:text-accent hover:border-accent/40">Next</button>' : '')
+        + '</nav>'
+      : '';
+
+    searchResults.innerHTML = current
+      .map(({ post }) => {
+        const snippet = highlightSnippet(post.content || post.excerpt, query, regexMode);
+        const tags = renderLimitedSearchTags(post.tags || []);
+        return '<article class="post-card">'
+          + '<h2 class="text-lg font-semibold"><a class="hover:text-accent" href="' + root + '/posts/' + encodeURIComponent(post.slug) + '.html">' + escapeHtml(post.title) + '</a></h2>'
+          + '<p class="mt-2 text-sm text-subtle">' + escapeHtml(post.excerpt) + '</p>'
+          + '<p class="mt-2 text-sm text-subtle">' + snippet + '</p>'
+          + '<div class="mt-3 text-xs flex items-center gap-2 text-subtle"><time datetime="' + escapeHtml(post.date) + '">' + formatDate(post.date) + '</time><div class="ml-2 flex gap-2 whitespace-nowrap">' + tags + '</div></div>'
+          + '</article>';
+      })
+      .join('')
+      + pages;
+
+    for (const button of searchResults.querySelectorAll('[data-search-page]')) {
+      button.addEventListener('click', () => {
+        const action = button.getAttribute('data-search-page');
+        if (action === 'prev') {
+          searchPage = Math.max(1, searchPage - 1);
+        } else if (action === 'next') {
+          searchPage += 1;
+        } else {
+          searchPage = Number(action || '1');
+        }
+        renderSearchPage(currentRanked, query, regexMode);
+      });
+    }
+  }
 
   function renderResults(query) {
     const trimmed = query.trim();
@@ -194,30 +261,14 @@ async function setupSearch() {
       .filter((entry) => entry.score > 0)
       .sort((a, b) => b.score - a.score || b.post.date.localeCompare(a.post.date));
 
+    currentRanked = ranked;
+    searchPage = 1;
+
     defaultPosts.classList.add('hidden');
     searchResults.classList.remove('hidden');
     searchMeta.textContent = (regexMode ? '[Regex] ' : '') + '\'' + trimmed + '\' 검색 결과: ' + ranked.length + '개';
 
-    if (!ranked.length) {
-      searchResults.innerHTML = '<article class="post-card"><p class="text-sm text-subtle">검색 결과가 없습니다.</p></article>';
-      return;
-    }
-
-    searchResults.innerHTML = ranked
-      .slice(0, 30)
-      .map(({ post }) => {
-        const snippet = highlightSnippet(post.content || post.excerpt, trimmed, regexMode);
-        const tags = (post.tags || [])
-          .map((tag) => '<a class="px-2 py-0.5 rounded bg-accent/10 text-accent text-xs hover:bg-accent/20" href="' + root + '/tags/' + encodeURIComponent(tag) + '.html">' + escapeHtml(tag) + '</a>')
-          .join('');
-        return '<article class="post-card">'
-          + '<h2 class="text-lg font-semibold"><a class="hover:text-accent" href="' + root + '/posts/' + encodeURIComponent(post.slug) + '.html">' + escapeHtml(post.title) + '</a></h2>'
-          + '<p class="mt-2 text-sm text-subtle">' + escapeHtml(post.excerpt) + '</p>'
-          + '<p class="mt-2 text-sm text-subtle">' + snippet + '</p>'
-          + '<div class="mt-3 text-xs flex items-center gap-2 text-subtle"><time datetime="' + escapeHtml(post.date) + '">' + formatDate(post.date) + '</time><div class="ml-2 flex gap-2 flex-wrap">' + tags + '</div></div>'
-          + '</article>';
-      })
-      .join('');
+    renderSearchPage(ranked, trimmed, regexMode);
   }
 
   searchInput.addEventListener('input', (event) => {

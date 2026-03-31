@@ -27,6 +27,8 @@ const SITE_DIR = path.join(ROOT, "site");
 const POSTS_OUT_DIR = path.join(SITE_DIR, "posts");
 const TAGS_OUT_DIR = path.join(SITE_DIR, "tags");
 const UPLOADS_OUT_DIR = path.join(SITE_DIR, "assets", "uploads");
+const PAGES_OUT_DIR = path.join(SITE_DIR, "pages");
+const POSTS_PER_PAGE = 8;
 
 const GISCUS_CONFIG = {
   enabled: (process.env.GISCUS_ENABLED ?? "true") === "true",
@@ -182,11 +184,75 @@ function renderTagPillsWithPrefix(tags: string[], rootPrefix: string): string {
     .join("");
 }
 
+function renderLimitedTagPillsWithPrefix(tags: string[], rootPrefix: string, limit = 3): string {
+  const visible = tags.slice(0, limit);
+  const hiddenCount = Math.max(0, tags.length - visible.length);
+  const pills = renderTagPillsWithPrefix(visible, rootPrefix);
+  if (!hiddenCount) {
+    return pills;
+  }
+  const hiddenLabel = escapeHtml(tags.slice(limit).join(", "));
+  return `${pills}<span class="tag-overflow-tooltip px-2 py-0.5 rounded bg-border/30 text-subtle text-xs" data-tooltip="${hiddenLabel}" tabindex="0">+${hiddenCount}</span>`;
+}
+
+function indexPageHref(page: number, rootPrefix: string): string {
+  if (page <= 1) {
+    return `${rootPrefix}/index.html`;
+  }
+  return `${rootPrefix}/pages/${page}.html`;
+}
+
+function tagPageHref(tag: string, page: number, rootPrefix: string): string {
+  const slug = encodeURIComponent(tag);
+  if (page <= 1) {
+    return `${rootPrefix}/tags/${slug}.html`;
+  }
+  return `${rootPrefix}/tags/${slug}-${page}.html`;
+}
+
+function paginate<T>(items: T[], page: number, pageSize: number): T[] {
+  const start = (page - 1) * pageSize;
+  return items.slice(start, start + pageSize);
+}
+
+function renderPagination(
+  currentPage: number,
+  totalPages: number,
+  href: (page: number) => string
+): string {
+  if (totalPages <= 1) {
+    return "";
+  }
+
+  const pages = Array.from({ length: totalPages }, (_, i) => i + 1)
+    .map((page) => {
+      const active = page === currentPage;
+      return `<a class="px-2 py-1 rounded border text-xs ${
+        active
+          ? "bg-accent text-header border-accent"
+          : "border-border/30 text-subtle hover:text-accent hover:border-accent/40"
+      }" href="${href(page)}">${page}</a>`;
+    })
+    .join("");
+
+  const prev =
+    currentPage > 1
+      ? `<a class="px-2 py-1 rounded border border-border/30 text-xs text-subtle hover:text-accent hover:border-accent/40" href="${href(currentPage - 1)}">Prev</a>`
+      : "";
+
+  const next =
+    currentPage < totalPages
+      ? `<a class="px-2 py-1 rounded border border-border/30 text-xs text-subtle hover:text-accent hover:border-accent/40" href="${href(currentPage + 1)}">Next</a>`
+      : "";
+
+  return `<nav class="mt-8 flex flex-wrap items-center gap-2" aria-label="Pagination">${prev}${pages}${next}</nav>`;
+}
+
 function renderProfileCard(): string {
   return `<aside id="profile" class="space-y-4 lg:col-span-1 order-2 lg:order-1">
       <section class="rounded-lg p-5 bg-muted-surface/50 border border-border/20 text-sm text-subtle lg:sticky lg:top-20 lg:self-start lg:max-h-[70vh] lg:overflow-auto">
-        <h3 class="text-base font-semibold text-text">qluana7</h3>
-        <p class="mt-2 leading-relaxed">C#, C++, TypeScript, Assembly를 다루는 개발자. 도구 제작과 시스템 성향 프로젝트를 좋아합니다.</p>
+        <h3 class="text-base font-semibold text-text">Luana7</h3>
+        <p class="mt-2 leading-relaxed">C++ 개발자. 엠베디드/시스템 지향. Assembly와 같은 로우 레벨을 탐구하는 것을 좋아함.</p>
 
         <div class="mt-4 space-y-2">
           <a class="block hover:text-accent" href="https://github.com/qluana7" target="_blank" rel="noreferrer">GitHub - @qluana7</a>
@@ -196,10 +262,10 @@ function renderProfileCard(): string {
         <details class="mt-4 group">
           <summary class="cursor-pointer select-none text-xs text-subtle hover:text-accent">More links</summary>
           <div class="mt-3 space-y-2 text-xs leading-relaxed">
-            <a class="block hover:text-accent" href="https://thinkcs.tistory.com" target="_blank" rel="noreferrer">Blog - Think C#</a>
             <a class="block hover:text-accent" href="https://www.acmicpc.net/user/lukince" target="_blank" rel="noreferrer">Baekjoon - lukince</a>
             <a class="block hover:text-accent" href="https://www.acmicpc.net/user/cssembler" target="_blank" rel="noreferrer">Baekjoon - cssembler</a>
             <a class="block hover:text-accent" href="https://codeforces.com/profile/luana7" target="_blank" rel="noreferrer">Codeforces - luana7</a>
+            <a class="block hover:text-accent" href="https://atcoder.jp/users/luana7" target="_blank" rel="noreferrer">atcoder - luana7</a>
           </div>
         </details>
       </section>
@@ -229,7 +295,7 @@ function renderLayout(title: string, body: string, rootPrefix: string): string {
   <header class="sticky top-0 border-b border-border/40 bg-header/80 backdrop-blur-md z-10">
     <div class="max-w-5xl mx-auto px-4 py-4">
       <div class="flex items-center gap-6">
-        <a class="text-lg font-semibold tracking-tight hover:text-accent" href="${rootPrefix}/index.html">Luana7</a>
+        <a class="text-lg font-semibold tracking-tight hover:text-accent" href="${rootPrefix}/index.html">Devlog</a>
         <nav class="flex items-center gap-4 text-sm">
           <a class="hover:text-accent" href="${rootPrefix}/index.html#posts">Posts</a>
         </nav>
@@ -243,7 +309,7 @@ function renderLayout(title: string, body: string, rootPrefix: string): string {
   </header>
   ${body}
   <footer class="border-t border-border/30 mt-10">
-    <div class="max-w-5xl mx-auto px-4 py-6 text-sm text-subtle">Built with TypeScript 7 tsgo</div>
+    <div class="max-w-5xl mx-auto px-4 py-6 text-sm text-subtle">Copyright © ${new Date().getFullYear()} qluana7. All rights reserved.</div>
   </footer>
 </body>
 </html>`;
@@ -336,7 +402,7 @@ function renderPostCards(posts: Post[], prefix: string): string {
         <p class="mt-2 text-sm text-subtle">${escapeHtml(post.excerpt)}</p>
         <div class="mt-3 text-xs flex items-center gap-2 text-subtle">
           <time datetime="${escapeHtml(post.date)}">${escapeHtml(formatDate(post.date))}</time>
-          <div class="ml-2 flex gap-2 flex-wrap">${renderTagPillsWithPrefix(post.tags, prefix)}</div>
+          <div class="ml-2 flex gap-2 whitespace-nowrap">${renderLimitedTagPillsWithPrefix(post.tags, prefix)}</div>
         </div>
       </article>`
     )
@@ -377,7 +443,7 @@ function renderSearchBox(): string {
   <section id="search-results" class="grid gap-4 hidden" aria-live="polite"></section>`;
 }
 
-function renderIndexBody(posts: Post[]): string {
+function renderIndexBody(posts: Post[], currentPage: number, totalPages: number, rootPrefix: string): string {
   const tagCount = new Map<string, number>();
   for (const post of posts) {
     for (const tag of post.tags) {
@@ -392,17 +458,22 @@ function renderIndexBody(posts: Post[]): string {
     return a[0].localeCompare(b[0]);
   });
 
-  const cards = renderPostCards(posts, ".");
-  const tags = renderTagCloud(sortedTags, ".");
+  const pagedPosts = paginate(posts, currentPage, POSTS_PER_PAGE);
+  const cards = renderPostCards(pagedPosts, rootPrefix);
+  const tags = renderTagCloud(sortedTags, rootPrefix);
+  const pagination = renderPagination(currentPage, totalPages, (page) => indexPageHref(page, rootPrefix));
 
   return `<main class="max-w-[88rem] mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-4 gap-8">
     ${renderProfileCard()}
-    <section id="posts" aria-label="Blog posts" class="lg:col-span-2 order-1 lg:order-2">
-      ${renderSearchBox()}
-      <section id="default-posts" class="grid gap-6">${cards}</section>
+    <section id="posts" aria-label="Blog posts" class="lg:col-span-2 order-1 lg:order-2 lg:-ml-3 lg:pr-8 xl:pr-12">
+      <div class="lg:max-w-[48rem] xl:max-w-[52rem]">
+        ${renderSearchBox()}
+        <section id="default-posts" class="grid gap-6">${cards}</section>
+        ${pagination}
+      </div>
     </section>
-    <aside id="tags" class="space-y-4 lg:col-span-1 order-3">
-      <div class="rounded-lg p-5 bg-muted-surface/50 border border-border/20 text-sm text-subtle lg:sticky lg:top-20 lg:self-start lg:max-h-[70vh] lg:overflow-auto">
+    <aside id="tags" class="space-y-4 lg:col-span-1 order-3 lg:pl-8 xl:pl-12">
+      <div class="custom-scroll rounded-lg p-5 bg-muted-surface/50 border border-border/20 text-sm text-subtle lg:sticky lg:top-20 lg:self-start lg:w-full lg:max-w-[18rem] lg:ml-auto lg:max-h-[46vh] lg:overflow-auto">
         <h4 class="font-medium mb-2">Tags</h4>
         <div class="flex flex-wrap gap-2 text-subtle">${tags}</div>
       </div>
@@ -410,18 +481,24 @@ function renderIndexBody(posts: Post[]): string {
   </main>`;
 }
 
-function renderTagPageBody(tag: string, posts: Post[], allTags: [string, number][]): string {
-  const cards = renderPostCards(posts, "..");
+function renderTagPageBody(tag: string, posts: Post[], allTags: [string, number][], currentPage: number): string {
+  const totalPages = Math.max(1, Math.ceil(posts.length / POSTS_PER_PAGE));
+  const pagedPosts = paginate(posts, currentPage, POSTS_PER_PAGE);
+  const cards = renderPostCards(pagedPosts, "..");
   const tags = renderTagCloud(allTags, "..", tag);
+  const pagination = renderPagination(currentPage, totalPages, (page) => tagPageHref(tag, page, ".."));
   return `<main class="max-w-[88rem] mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-4 gap-8">
     ${renderProfileCard()}
-    <section class="lg:col-span-2 order-1 lg:order-2">
-      <div class="mb-4 text-sm text-subtle"><a class="hover:text-accent" href="../index.html">Home</a> / Tag</div>
-      <h1 class="text-2xl font-semibold tracking-tight mb-6">#${escapeHtml(tag)}</h1>
-      <section class="grid gap-6">${cards}</section>
+    <section class="lg:col-span-2 order-1 lg:order-2 lg:-ml-3 lg:pr-8 xl:pr-12">
+      <div class="lg:max-w-[48rem] xl:max-w-[52rem]">
+        <div class="mb-4 text-sm text-subtle"><a class="hover:text-accent" href="../index.html">Home</a> / Tag</div>
+        <h1 class="text-2xl font-semibold tracking-tight mb-6">#${escapeHtml(tag)}</h1>
+        <section class="grid gap-6">${cards}</section>
+        ${pagination}
+      </div>
     </section>
-    <aside class="space-y-4 lg:col-span-1 order-3">
-      <div class="rounded-lg p-5 bg-muted-surface/50 border border-border/20 text-sm text-subtle lg:sticky lg:top-20 lg:self-start lg:max-h-[70vh] lg:overflow-auto">
+    <aside class="space-y-4 lg:col-span-1 order-3 lg:pl-8 xl:pl-12">
+      <div class="custom-scroll rounded-lg p-5 bg-muted-surface/50 border border-border/20 text-sm text-subtle lg:sticky lg:top-20 lg:self-start lg:w-full lg:max-w-[18rem] lg:ml-auto lg:max-h-[46vh] lg:overflow-auto">
         <h4 class="font-medium mb-2">All Tags</h4>
         <div class="flex flex-wrap gap-2 text-subtle">${tags}</div>
       </div>
@@ -500,16 +577,29 @@ async function writeTagPages(posts: Post[]): Promise<void> {
   await Promise.all(
     sortedTags.map(async ([tag]) => {
       const taggedPosts = posts.filter((post) => post.tags.includes(tag));
-      const html = renderLayout(`#${tag} posts`, renderTagPageBody(tag, taggedPosts, sortedTags), "..");
-      const filePath = path.join(TAGS_OUT_DIR, `${encodeURIComponent(tag)}.html`);
-      await writeFile(filePath, html, "utf8");
+      const totalPages = Math.max(1, Math.ceil(taggedPosts.length / POSTS_PER_PAGE));
+      for (let page = 1; page <= totalPages; page += 1) {
+        const html = renderLayout(`#${tag} posts`, renderTagPageBody(tag, taggedPosts, sortedTags, page), "..");
+        const filePath =
+          page === 1
+            ? path.join(TAGS_OUT_DIR, `${encodeURIComponent(tag)}.html`)
+            : path.join(TAGS_OUT_DIR, `${encodeURIComponent(tag)}-${page}.html`);
+        await writeFile(filePath, html, "utf8");
+      }
     })
   );
 }
 
-async function writeIndexPage(posts: Post[]): Promise<void> {
-  const html = renderLayout("Luana7's Blog", renderIndexBody(posts), ".");
-  await writeFile(path.join(SITE_DIR, "index.html"), html, "utf8");
+async function writeIndexPages(posts: Post[]): Promise<void> {
+  const totalPages = Math.max(1, Math.ceil(posts.length / POSTS_PER_PAGE));
+  await mkdir(PAGES_OUT_DIR, { recursive: true });
+
+  for (let page = 1; page <= totalPages; page += 1) {
+    const rootPrefix = page === 1 ? "." : "..";
+    const html = renderLayout("Devlog", renderIndexBody(posts, page, totalPages, rootPrefix), rootPrefix);
+    const filePath = page === 1 ? path.join(SITE_DIR, "index.html") : path.join(PAGES_OUT_DIR, `${page}.html`);
+    await writeFile(filePath, html, "utf8");
+  }
 }
 
 async function writeFeedData(posts: Post[]): Promise<void> {
@@ -536,11 +626,12 @@ async function writePostScript(): Promise<void> {
 async function build(): Promise<void> {
   await rm(POSTS_OUT_DIR, { recursive: true, force: true });
   await rm(TAGS_OUT_DIR, { recursive: true, force: true });
+  await rm(PAGES_OUT_DIR, { recursive: true, force: true });
   await rm(UPLOADS_OUT_DIR, { recursive: true, force: true });
   const posts = await readPosts();
   await writePostPages(posts);
   await writeTagPages(posts);
-  await writeIndexPage(posts);
+  await writeIndexPages(posts);
   await writeFeedData(posts);
   await writeSearchScript();
   await writePostScript();

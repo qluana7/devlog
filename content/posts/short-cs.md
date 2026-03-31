@@ -1,5 +1,5 @@
 ---
-title: "Short Coding - C# Version"
+title: "Short Coding (숏코딩) - C# Version"
 slug: "short-cs"
 date: "2021-09-14"
 excerpt: "백준 숏코딩에 빠진 필자가 들고 온 것은 바로 C# 숏코딩이다. 사실 C# 숏코딩을 해도 C같은 다른 언어(특히 GolfScript)에 못 미치는건 사실이다. 다만, C# 숏코딩은 타 언어에 비해서 경쟁력이 낮아 C# 카테고리에서 1등을 차지하기 쉬울것이다. 그럼 바이"
@@ -55,14 +55,9 @@ Console.WriteLine(a+b);
 <p><br></p>
 <p>위 코드의 문제점은 a와 b를 새로 할당해서 변환하는 작업을 거친다는 것이다. 이를 간략하게 줄여줄 메서드가 있는데, 바로 Array.ConvertAll이라는 함수이다. 내용에 대해서는 아래 링크를 참조하자.</p>
 <p><br></p>
-<figure>(TInput[], Converter<TInput,TOutput>) 메서드 (System)" data-og-description="한 형식의 배열을 다른 형식의 배열로 변환합니다.Converts an array of one type to an array of another type." data-og-host="docs.microsoft.com" data-og-source-url="https://docs.microsoft.com/ko-kr/dotnet/api/system.array.convertall?view=net-5.0" data-og-url="https://docs.microsoft.com/ko-kr/dotnet/api/system.array.convertall" data-og-image="https://blog.kakaocdn.net/dna/bFUMRM/hyLBBfcTuS/AAAAAAAAAAAAAAAAAAAAAAkRfMrqq7G845iosKxFI0gUtvSadOoQ1S_uxLuYAFGe/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1774969199&allow_ip=&allow_referer=&signature=p92%2FWnKZnnKwwfMjEkauEnkMRjk%3D"><a>
-<div> </div>
-<div>
-<p>Array.ConvertAll<tinput,toutput>(TInput[], Converter<tinput,toutput>) 메서드 (System)</tinput,toutput></tinput,toutput></p>
-<p>한 형식의 배열을 다른 형식의 배열로 변환합니다.Converts an array of one type to an array of another type.</p>
-<p>docs.microsoft.com</p>
-</div>
-</a></figure>
+
+<div class="embed-card"><a class="embed-card-link" href="https://docs.microsoft.com/ko-kr/dotnet/api/system.array.convertall" target="_blank" rel="noreferrer noopener"><div class="embed-card-media"><img src="https://blog.kakaocdn.net/dna/bFUMRM/hyLBBfcTuS/AAAAAAAAAAAAAAAAAAAAAAkRfMrqq7G845iosKxFI0gUtvSadOoQ1S_uxLuYAFGe/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1774969199&allow_ip=&allow_referer=&signature=p92%2FWnKZnnKwwfMjEkauEnkMRjk%3D" alt="Array.ConvertAll<TInput,TOutput>(TInput[], Converter<TInput,TOutput>) 메서드 (System)" loading="lazy" /></div><div class="embed-card-body"><p class="embed-card-title">Array.ConvertAll<TInput,TOutput>(TInput[], Converter<TInput,TOutput>) 메서드 (System)</p><p class="embed-card-desc">한 형식의 배열을 다른 형식의 배열로 변환합니다.Converts an array of one type to an array of another type.</p><p class="embed-card-host">docs.microsoft.com</p></div></a></div>
+
 <p><br></p>
 <p>함수를 이용해 a와 b를 사용하지 않고 배열만을 이용해보자. 또한 WriteLine이 아닌 Write함수로 대체할 수 있다.</p>
 
@@ -112,16 +107,11 @@ using static System.Console;Write(Read()-3*Read()+Read());
 <p><b>y. for문 트릭</b></p>
 <p><br></p>
 <p>for문은 특이한 성질을 가지고 있다. C에서 숏코딩을 해봤다면 알법한 내용이다. 혹시나 궁금하다면 아래 주소로 들어가서 내용을 봐보자</p>
-<figure><a>
-<div> </div>
-<div>
-<p>for에 관한 고찰</p>
-<p>C#에서 자주 보이는 구문이 하나 있다. 바로 "for". ​ for은 반복을 해주는 반복문으로써 꽤 자주 쓰이게 되는데, 최근에 발견한 for에 관한 이야기이다. ​ 우리가 잘 알고 있듯이 for문은 다음과 같</p>
-<p>thinkcs.tistory.com</p>
-</div>
-</a></figure>
+
+<div class="embed-card"><a class="embed-card-link" href="https://thinkcs.tistory.com/entry/about-for" target="_blank" rel="noreferrer noopener"><div class="embed-card-media"><img src="https://blog.kakaocdn.net/dna/blRubG/hyLBGt6afY/AAAAAAAAAAAAAAAAAAAAABm6SeYkWC0dNQrL8zNqGhbPGlbZ4uV1flU4TtCitnAh/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1774969199&allow_ip=&allow_referer=&signature=S0soObBPkJWnYvs47JpwG7q4ooY%3D" alt="for에 관한 고찰" loading="lazy" /></div><div class="embed-card-body"><p class="embed-card-title">for에 관한 고찰</p><p class="embed-card-desc">C#에서 자주 보이는 구문이 하나 있다. 바로 "for". ​ for은 반복을 해주는 반복문으로써 꽤 자주 쓰이게 되는데, 최근에 발견한 for에 관한 이야기이다. ​ 우리가 잘 알고 있듯이 for문은 다음과 같</p><p class="embed-card-host">thinkcs.tistory.com</p></div></a></div>
+
 <p>위 내용처럼, for문 트릭을 이용함으로써 선언자 생략, 조건문 변형등이 가능하다.</p>
-<hr>
+<hr contenteditable="false" />
 <p>숏코딩 재밌어 보이지 않는가? A+B 다음으로 쉬운 A-B를 스스로 도전해보길 바란다.</p>
 <p><br></p>
 <p>참고로 필자의 A-B 기록은 58B이다. 위와 같은 방법을 응용해서 코드를 줄여보길 바란다. </p>

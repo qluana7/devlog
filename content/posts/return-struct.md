@@ -1,5 +1,5 @@
 ---
-title: "A Study on Returning struct"
+title: "struct 반환에 대한 고찰"
 slug: "return-struct"
 date: "2023-04-06"
 excerpt: "함수의 반환에 대한 고찰 오늘은 함수 반환에 대해 간단하게 알아보고자 한다. * 컴파일 옵션은 다음과 같다 gcc -o Main Main.c -O0 보통 함수에서 값을 반환하게 되면, eax(32bits), rax(64bits) 레지스터를 사용하게 된다. 그리하여 th"
@@ -13,14 +13,8 @@ tags:
   - "struct반환"
 ---
 
-<figure><a>
-<div> </div>
-<div>
-<p>함수의 반환에 대한 고찰</p>
-<p>오늘은 함수 반환에 대해 간단하게 알아보고자 한다. * 컴파일 옵션은 다음과 같다 gcc -o Main Main.c -O0 보통 함수에서 값을 반환하게 되면, eax(32bits), rax(64bits) 레지스터를 사용하게 된다. 그리하여</p>
-<p>thinkcs.tistory.com</p>
-</div>
-</a></figure>
+<div class="embed-card"><a class="embed-card-link" href="https://thinkcs.tistory.com/entry/function-return" target="_blank" rel="noreferrer noopener"><div class="embed-card-media"><img src="https://blog.kakaocdn.net/dna/K5zzu/hySaYWNvhu/AAAAAAAAAAAAAAAAAAAAALw8P2JoVkau-3I99oeeBp-JFDMbWUVA5HjAqQT2FMzO/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1774969199&allow_ip=&allow_referer=&signature=MRhJ95bY8WlOsWXyJ56%2BtyHwDGw%3D" alt="함수의 반환에 대한 고찰" loading="lazy" /></div><div class="embed-card-body"><p class="embed-card-title">함수의 반환에 대한 고찰</p><p class="embed-card-desc">오늘은 함수 반환에 대해 간단하게 알아보고자 한다. * 컴파일 옵션은 다음과 같다 gcc -o Main Main.c -O0 보통 함수에서 값을 반환하게 되면, eax(32bits), rax(64bits) 레지스터를 사용하게 된다. 그리하여</p><p class="embed-card-host">thinkcs.tistory.com</p></div></a></div>
+
 <p>예전이 이런 포스팅을 한적이 있었다.</p>
 <p><br></p>
 <p>어셈블리를 사용하면서 얻은 지식이 있어 추가적으로 보완하고자 글을 쓰게 되었다.</p>

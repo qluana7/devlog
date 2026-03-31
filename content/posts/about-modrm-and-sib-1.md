@@ -1,5 +1,5 @@
 ---
-title: "About ModR/M and SIB (Part 1)"
+title: "ModR/M과 SIB에 관한 이야기 1"
 slug: "about-modrm-and-sib-1"
 date: "2023-12-18"
 excerpt: "최근 어셈블리를 사용하던 도중 왜 돌아가지 라는 생각이 드는 코드가 있었다. 엥? 뭐가 문제인데요? 이전 글 을 참고해 보자. Scale의 경우에는 보이다 싶이 1, 2, 4, 8만 사용될 수 있다. 그렇다. Instruction 상에는 저런 SIB가 존재할 수 없다는"
@@ -22,7 +22,7 @@ mov eax, [arr+edx*3]
 <p><br></p>
 <p><i>엥? 뭐가 문제인데요?</i></p>
 <p><br></p>
-<p><a>이전 글</a>을 참고해 보자.</p>
+<p><a href="https://thinkcs.tistory.com/entry/about-assembly-and-binary" target="_blank" rel="noopener">이전 글</a>을 참고해 보자.</p>
 <blockquote>Scale의 경우에는 보이다 싶이 1, 2, 4, 8만 사용될 수 있다.</blockquote>
 <p><br></p>
 <p>그렇다. Instruction 상에는 저런 SIB가 존재할 수 없다는 얘기다.</p>

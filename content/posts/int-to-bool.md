@@ -1,5 +1,5 @@
 ---
-title: "On the Relationship Between bool and int (In C)"
+title: "bool과 int의 관계 (In C)"
 slug: "int-to-bool"
 date: "2022-03-12"
 excerpt: "0은 false고 나머지를 true로 받는 이유는 C 컴파일러 마음대로 이기 때문이다. 역어셈을 해보면 int -> bool하는 과정은 그저 cmp 하나로 작성되어 있음을 알 수 있다 cmp 변수 0x0 (cmp는 compare) 실제로 다음 코드를 역어셈 해보면 재밌"

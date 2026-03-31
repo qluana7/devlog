@@ -1,5 +1,5 @@
 ---
-title: "A Study on if (In C)"
+title: "if에 관한 고찰 (In C)"
 slug: "about-if"
 date: "2022-03-13"
 excerpt: "먼저 GCC의 최적화 방식을 알아보자. GCC는 상수가 들어왔을 때 해당 값에 따라서 비교하는 명령어(어셈에선 cmp)를 생성하지 않는다. 즉, 다음과 같은 식에서 GCC는 cmp와 je(jump)를 생성하지 않고 바로 내부 코드를 생성한다 이 방식은 연산자가 존재할 "

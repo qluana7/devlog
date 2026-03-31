@@ -13,7 +13,7 @@ tags:
   - "유효 주소"
 ---
 
-<p>어셈블리 기본 Instruction중 하나인 LEA(Load Effective Address)에 대해 알아보자.<br><br>Effective Address가 무엇인가?<br><br>예전에 <a>어셈블리와 기계어에 대한 포스트</a>에서 언급한 바 있는 SIB란 녀석이 있었다.</p>
+<p>어셈블리 기본 Instruction중 하나인 LEA(Load Effective Address)에 대해 알아보자.<br><br>Effective Address가 무엇인가?<br><br>예전에 <a title="어셈블리와 기계어에 관해서" href="https://thinkcs.tistory.com/entry/about-assembly-and-binary" target="_blank" rel="noopener">어셈블리와 기계어에 대한 포스트</a>에서 언급한 바 있는 SIB란 녀석이 있었다.</p>
 <p><br></p>
 <p>Base + Scale * Index로 계산되는데, 여기에 Displacement까지 더해서 나온 주솟값.</p>
 <p>이 주솟값을 <b>Effective Address</b>, 한국어론 <b>유효 주소</b>라고 부른다.</p>

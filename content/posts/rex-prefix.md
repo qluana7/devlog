@@ -1,5 +1,5 @@
 ---
-title: "Prefix { REX, VEX, EVEX }: REX"
+title: "prefix { REX, VEX, EVEX } : REX 편"
 slug: "rex-prefix"
 date: "2025-01-31"
 excerpt: "어셈블리를 하다보면 여러가지 종류의 prefix가 있는 것을 볼 수 있다. 오늘은 REX에 대해서 먼저 알아보자. 사실 실제로 어셈블리를 하면서 REX prefix를 직접 만나는 일은 없었을 것이다. 왜냐하면 저 prefix는 어셈블리에 알게 모르게 어셈블러에 의해 처"
@@ -17,7 +17,7 @@ tags:
 <p>어셈블리를 하다보면 여러가지 종류의 prefix가 있는 것을 볼 수 있다.</p>
 <p><br></p>
 <p>오늘은 REX에 대해서 먼저 알아보자.</p>
-<hr>
+<hr contenteditable="false" />
 <p><br></p>
 <p>사실 실제로 어셈블리를 하면서 REX prefix를 직접 만나는 일은 없었을 것이다.</p>
 <p><br></p>
@@ -55,11 +55,11 @@ mov rax, edx
 <p>보이는 것 처럼 REX.W라는 prefix가 사라진 것이 보일 것이다.</p>
 <p><br></p>
 <p>REX prefix에 대해 깊게 들어가보자.</p>
-<hr>
+<hr contenteditable="false" />
 <p><br></p>
 <h3>REX prefix</h3>
 <p>REX preifx는 다음과 같은 비트 구조를 갖는다.</p>
-<table>
+<table border="1">
 
 7
 6
@@ -85,7 +85,7 @@ B
 <p><br></p>
 <p>그럼 이제 bits[3:0]에 있는 비트에 대해 알아보자.</p>
 <p><br></p>
-<table>
+<table border="1">
 
 W
 64 Bit Operand Size
@@ -158,7 +158,7 @@ mov r8, [r8+r8]
 <p>REX에 비해 구조도 어렵고 처음 봤을때 이해하는데 조금 시간이 걸렸었다.</p>
 <p><br></p>
 <p>VEX가 이정도인데 EVEX는 오죽하겠는가.</p>
-<hr>
+<hr contenteditable="false" />
 <p><br></p>
 <p>여담.</p>
 <p><br></p>

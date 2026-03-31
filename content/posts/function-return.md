@@ -1,5 +1,5 @@
 ---
-title: "A Study on Function Return Semantics"
+title: "함수의 반환에 대한 고찰"
 slug: "function-return"
 date: "2022-12-27"
 excerpt: "오늘은 함수 반환에 대해 간단하게 알아보고자 한다. * 컴파일 옵션은 다음과 같다 보통 함수에서 값을 반환하게 되면, eax(32bits), rax(64bits) 레지스터를 사용하게 된다. 그리하여 main에서 int를 반환할때도 eax나 rax에 exit_code를 "

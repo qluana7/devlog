@@ -1,5 +1,5 @@
 ---
-title: "A Small Observation on for (In C)"
+title: "for에 관한 작은 고찰 (In C)"
 slug: "small-c-for"
 date: "2022-03-11"
 excerpt: "1. for문에서 조건식에 아무것도 안넣으면 무한으로 돌아가는 이유는 역어셈 했을때를 보면 알 수 있다 for에 모든 부분에 (코드블록 내부 포함) 아무 코드도 존재하지 않으면 jmp를 통해서 자기 자신으로 무한 점프를 시도한다 그러나 다른 부분이 하나라도 존재한다면 "
