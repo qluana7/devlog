@@ -9,7 +9,10 @@
     "build:site": "npm run build:scripts && node build-scripts/build.js",
     "build:css": "tailwindcss -c tailwind.config.cjs -i ./src/styles.css -o ./site/assets/styles.css --minify",
     "build": "npm run prepare:site && npm run build:site && npm run build:css",
-    "new:post": "npm run build:scripts && node build-scripts/new-post.js"
+    "new:post": "npm run build:scripts && node build-scripts/new-post.js",
+    "import:tistory": "node scripts/import_tistory.mjs",
+    "normalize:posts": "node scripts/normalize_imported_posts.mjs",
+    "migrate:images": "node scripts/migrate_images_to_jsdelivr.mjs ../devlog-assets"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.19",
