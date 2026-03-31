@@ -147,14 +147,41 @@ function bindSearchShortcuts() {
   });
 }
 
-function syncQueryToUrl(query) {
+function syncSearchStateToUrl(query, page) {
   const url = new URL(location.href);
   if (query.trim()) {
     url.searchParams.set('q', query.trim());
+    if (page > 1) {
+      url.searchParams.set('page', String(page));
+    } else {
+      url.searchParams.delete('page');
+    }
   } else {
     url.searchParams.delete('q');
+    url.searchParams.delete('page');
   }
   history.replaceState(null, '', url.toString());
+}
+
+function buildPageSeries(totalPages, currentPage) {
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
+  }
+
+  const pages = new Set([1, totalPages, currentPage - 1, currentPage, currentPage + 1]);
+  const sorted = [...pages].filter((p) => p >= 1 && p <= totalPages).sort((a, b) => a - b);
+  const result = [];
+
+  for (let i = 0; i < sorted.length; i += 1) {
+    const page = sorted[i];
+    const prev = sorted[i - 1];
+    if (prev && page - prev > 1) {
+      result.push('ellipsis');
+    }
+    result.push(page);
+  }
+
+  return result;
 }
 
 async function setupSearch() {
@@ -183,6 +210,7 @@ async function setupSearch() {
   function renderSearchPage(ranked, query, regexMode) {
     const totalPages = Math.max(1, Math.ceil(ranked.length / PAGE_SIZE));
     if (searchPage > totalPages) searchPage = totalPages;
+    syncSearchStateToUrl(query, searchPage);
     const start = (searchPage - 1) * PAGE_SIZE;
     const current = ranked.slice(start, start + PAGE_SIZE);
 
@@ -193,13 +221,22 @@ async function setupSearch() {
 
     const pages = totalPages > 1
       ? '<nav class="mt-2 flex flex-wrap items-center gap-2">'
-        + (searchPage > 1 ? '<button type="button" data-search-page="prev" class="px-2 py-1 rounded border border-border/30 text-xs text-subtle hover:text-accent hover:border-accent/40">Prev</button>' : '')
-        + Array.from({ length: totalPages }, (_, i) => i + 1)
-          .map((page) => '<button type="button" data-search-page="' + page + '" class="px-2 py-1 rounded border text-xs '
-            + (page === searchPage ? 'bg-accent text-header border-accent' : 'border-border/30 text-subtle hover:text-accent hover:border-accent/40')
-            + '">' + page + '</button>')
+        + (searchPage > 1
+          ? '<button type="button" data-search-page="prev" class="px-2 py-1 rounded border border-border/30 text-xs text-subtle hover:text-accent hover:border-accent/40">Prev</button>'
+          : '<span class="px-2 py-1 rounded border border-border/20 text-xs text-subtle/30 opacity-0 select-none" aria-hidden="true">Prev</span>')
+        + buildPageSeries(totalPages, searchPage)
+          .map((entry) => {
+            if (entry === 'ellipsis') {
+              return '<span class="px-1 text-xs text-subtle/70 select-none" aria-hidden="true">…</span>';
+            }
+            return '<button type="button" data-search-page="' + entry + '" class="px-2 py-1 rounded border text-xs '
+              + (entry === searchPage ? 'bg-accent text-header border-accent' : 'border-border/30 text-subtle hover:text-accent hover:border-accent/40')
+              + '">' + entry + '</button>';
+          })
           .join('')
-        + (searchPage < totalPages ? '<button type="button" data-search-page="next" class="px-2 py-1 rounded border border-border/30 text-xs text-subtle hover:text-accent hover:border-accent/40">Next</button>' : '')
+        + (searchPage < totalPages
+          ? '<button type="button" data-search-page="next" class="px-2 py-1 rounded border border-border/30 text-xs text-subtle hover:text-accent hover:border-accent/40">Next</button>'
+          : '<span class="px-2 py-1 rounded border border-border/20 text-xs text-subtle/30 opacity-0 select-none" aria-hidden="true">Next</span>')
         + '</nav>'
       : '';
 
@@ -232,9 +269,10 @@ async function setupSearch() {
     }
   }
 
-  function renderResults(query) {
+  function renderResults(query, options = {}) {
+    const preservePage = options.preservePage === true;
     const trimmed = query.trim();
-    syncQueryToUrl(trimmed);
+    syncSearchStateToUrl(trimmed, preservePage ? searchPage : 1);
     if (!trimmed) {
       defaultPosts.classList.remove('hidden');
       searchResults.classList.add('hidden');
@@ -262,7 +300,9 @@ async function setupSearch() {
       .sort((a, b) => b.score - a.score || b.post.date.localeCompare(a.post.date));
 
     currentRanked = ranked;
-    searchPage = 1;
+    if (!preservePage) {
+      searchPage = 1;
+    }
 
     defaultPosts.classList.add('hidden');
     searchResults.classList.remove('hidden');
@@ -279,6 +319,8 @@ async function setupSearch() {
 
   const params = new URLSearchParams(location.search);
   const initialQ = params.get('q');
+  const initialPage = Number(params.get('page') || '1');
+  searchPage = Number.isFinite(initialPage) && initialPage > 0 ? Math.floor(initialPage) : 1;
   const openSearch = params.get('openSearch') === '1';
   if (openSearch) {
     setPanelOpen(true);
@@ -287,7 +329,7 @@ async function setupSearch() {
   if (initialQ) {
     setPanelOpen(true);
     searchInput.value = initialQ;
-    renderResults(initialQ);
+    renderResults(initialQ, { preservePage: true });
   }
 }
 

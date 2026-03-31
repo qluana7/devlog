@@ -27,7 +27,6 @@ const SITE_DIR = path.join(ROOT, "site");
 const POSTS_OUT_DIR = path.join(SITE_DIR, "posts");
 const TAGS_OUT_DIR = path.join(SITE_DIR, "tags");
 const UPLOADS_OUT_DIR = path.join(SITE_DIR, "assets", "uploads");
-const PAGES_OUT_DIR = path.join(SITE_DIR, "pages");
 const POSTS_PER_PAGE = 8;
 
 const GISCUS_CONFIG = {
@@ -195,59 +194,6 @@ function renderLimitedTagPillsWithPrefix(tags: string[], rootPrefix: string, lim
   return `${pills}<span class="tag-overflow-tooltip px-2 py-0.5 rounded bg-border/30 text-subtle text-xs" data-tooltip="${hiddenLabel}" tabindex="0">+${hiddenCount}</span>`;
 }
 
-function indexPageHref(page: number, rootPrefix: string): string {
-  if (page <= 1) {
-    return `${rootPrefix}/index.html`;
-  }
-  return `${rootPrefix}/pages/${page}.html`;
-}
-
-function tagPageHref(tag: string, page: number, rootPrefix: string): string {
-  const slug = encodeURIComponent(tag);
-  if (page <= 1) {
-    return `${rootPrefix}/tags/${slug}.html`;
-  }
-  return `${rootPrefix}/tags/${slug}-${page}.html`;
-}
-
-function paginate<T>(items: T[], page: number, pageSize: number): T[] {
-  const start = (page - 1) * pageSize;
-  return items.slice(start, start + pageSize);
-}
-
-function renderPagination(
-  currentPage: number,
-  totalPages: number,
-  href: (page: number) => string
-): string {
-  if (totalPages <= 1) {
-    return "";
-  }
-
-  const pages = Array.from({ length: totalPages }, (_, i) => i + 1)
-    .map((page) => {
-      const active = page === currentPage;
-      return `<a class="px-2 py-1 rounded border text-xs ${
-        active
-          ? "bg-accent text-header border-accent"
-          : "border-border/30 text-subtle hover:text-accent hover:border-accent/40"
-      }" href="${href(page)}">${page}</a>`;
-    })
-    .join("");
-
-  const prev =
-    currentPage > 1
-      ? `<a class="px-2 py-1 rounded border border-border/30 text-xs text-subtle hover:text-accent hover:border-accent/40" href="${href(currentPage - 1)}">Prev</a>`
-      : "";
-
-  const next =
-    currentPage < totalPages
-      ? `<a class="px-2 py-1 rounded border border-border/30 text-xs text-subtle hover:text-accent hover:border-accent/40" href="${href(currentPage + 1)}">Next</a>`
-      : "";
-
-  return `<nav class="mt-8 flex flex-wrap items-center gap-2" aria-label="Pagination">${prev}${pages}${next}</nav>`;
-}
-
 function renderProfileCard(): string {
   return `<aside id="profile" class="space-y-4 lg:col-span-1 order-2 lg:order-1">
       <section class="rounded-lg p-5 bg-muted-surface/50 border border-border/20 text-sm text-subtle lg:sticky lg:top-20 lg:self-start lg:max-h-[70vh] lg:overflow-auto">
@@ -289,6 +235,7 @@ function renderLayout(title: string, body: string, rootPrefix: string): string {
   <link rel="stylesheet" href="${rootPrefix}/assets/styles.css">
   ${engagementConfigScript}
   <script defer src="${rootPrefix}/assets/search.js"></script>
+  <script defer src="${rootPrefix}/assets/pagination.js"></script>
   <script defer src="${rootPrefix}/assets/post.js"></script>
 </head>
 <body class="antialiased bg-bg text-text font-inter">
@@ -443,7 +390,7 @@ function renderSearchBox(): string {
   <section id="search-results" class="grid gap-4 hidden" aria-live="polite"></section>`;
 }
 
-function renderIndexBody(posts: Post[], currentPage: number, totalPages: number, rootPrefix: string): string {
+function renderIndexBody(posts: Post[]): string {
   const tagCount = new Map<string, number>();
   for (const post of posts) {
     for (const tag of post.tags) {
@@ -458,18 +405,16 @@ function renderIndexBody(posts: Post[], currentPage: number, totalPages: number,
     return a[0].localeCompare(b[0]);
   });
 
-  const pagedPosts = paginate(posts, currentPage, POSTS_PER_PAGE);
-  const cards = renderPostCards(pagedPosts, rootPrefix);
-  const tags = renderTagCloud(sortedTags, rootPrefix);
-  const pagination = renderPagination(currentPage, totalPages, (page) => indexPageHref(page, rootPrefix));
+  const cards = renderPostCards(posts, ".");
+  const tags = renderTagCloud(sortedTags, ".");
 
   return `<main class="max-w-[88rem] mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-4 gap-8">
     ${renderProfileCard()}
     <section id="posts" aria-label="Blog posts" class="lg:col-span-2 order-1 lg:order-2 lg:-ml-3 lg:pr-8 xl:pr-12">
       <div class="lg:max-w-[48rem] xl:max-w-[52rem]">
         ${renderSearchBox()}
-        <section id="default-posts" class="grid gap-6">${cards}</section>
-        ${pagination}
+        <section id="default-posts" class="grid gap-6" data-page-size="${POSTS_PER_PAGE}" data-pagination-base="index">${cards}</section>
+        <nav id="post-pagination" class="mt-8 flex flex-wrap items-center gap-2" aria-label="Pagination"></nav>
       </div>
     </section>
     <aside id="tags" class="space-y-4 lg:col-span-1 order-3 lg:pl-8 xl:pl-12">
@@ -481,20 +426,18 @@ function renderIndexBody(posts: Post[], currentPage: number, totalPages: number,
   </main>`;
 }
 
-function renderTagPageBody(tag: string, posts: Post[], allTags: [string, number][], currentPage: number): string {
-  const totalPages = Math.max(1, Math.ceil(posts.length / POSTS_PER_PAGE));
-  const pagedPosts = paginate(posts, currentPage, POSTS_PER_PAGE);
-  const cards = renderPostCards(pagedPosts, "..");
+function renderTagPageBody(tag: string, posts: Post[], allTags: [string, number][]): string {
+  const cards = renderPostCards(posts, "..");
   const tags = renderTagCloud(allTags, "..", tag);
-  const pagination = renderPagination(currentPage, totalPages, (page) => tagPageHref(tag, page, ".."));
+  const tagBase = `tag:${encodeURIComponent(tag)}`;
   return `<main class="max-w-[88rem] mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-4 gap-8">
     ${renderProfileCard()}
     <section class="lg:col-span-2 order-1 lg:order-2 lg:-ml-3 lg:pr-8 xl:pr-12">
       <div class="lg:max-w-[48rem] xl:max-w-[52rem]">
         <div class="mb-4 text-sm text-subtle"><a class="hover:text-accent" href="../index.html">Home</a> / Tag</div>
         <h1 class="text-2xl font-semibold tracking-tight mb-6">#${escapeHtml(tag)}</h1>
-        <section class="grid gap-6">${cards}</section>
-        ${pagination}
+        <section id="tag-posts" class="grid gap-6" data-page-size="${POSTS_PER_PAGE}" data-pagination-base="${tagBase}">${cards}</section>
+        <nav id="tag-pagination" class="mt-8 flex flex-wrap items-center gap-2" aria-label="Pagination"></nav>
       </div>
     </section>
     <aside class="space-y-4 lg:col-span-1 order-3 lg:pl-8 xl:pl-12">
@@ -577,29 +520,16 @@ async function writeTagPages(posts: Post[]): Promise<void> {
   await Promise.all(
     sortedTags.map(async ([tag]) => {
       const taggedPosts = posts.filter((post) => post.tags.includes(tag));
-      const totalPages = Math.max(1, Math.ceil(taggedPosts.length / POSTS_PER_PAGE));
-      for (let page = 1; page <= totalPages; page += 1) {
-        const html = renderLayout(`#${tag} posts`, renderTagPageBody(tag, taggedPosts, sortedTags, page), "..");
-        const filePath =
-          page === 1
-            ? path.join(TAGS_OUT_DIR, `${encodeURIComponent(tag)}.html`)
-            : path.join(TAGS_OUT_DIR, `${encodeURIComponent(tag)}-${page}.html`);
-        await writeFile(filePath, html, "utf8");
-      }
+      const html = renderLayout(`#${tag} posts`, renderTagPageBody(tag, taggedPosts, sortedTags), "..");
+      const filePath = path.join(TAGS_OUT_DIR, `${encodeURIComponent(tag)}.html`);
+      await writeFile(filePath, html, "utf8");
     })
   );
 }
 
-async function writeIndexPages(posts: Post[]): Promise<void> {
-  const totalPages = Math.max(1, Math.ceil(posts.length / POSTS_PER_PAGE));
-  await mkdir(PAGES_OUT_DIR, { recursive: true });
-
-  for (let page = 1; page <= totalPages; page += 1) {
-    const rootPrefix = page === 1 ? "." : "..";
-    const html = renderLayout("Devlog", renderIndexBody(posts, page, totalPages, rootPrefix), rootPrefix);
-    const filePath = page === 1 ? path.join(SITE_DIR, "index.html") : path.join(PAGES_OUT_DIR, `${page}.html`);
-    await writeFile(filePath, html, "utf8");
-  }
+async function writeIndexPage(posts: Post[]): Promise<void> {
+  const html = renderLayout("Devlog", renderIndexBody(posts), ".");
+  await writeFile(path.join(SITE_DIR, "index.html"), html, "utf8");
 }
 
 async function writeFeedData(posts: Post[]): Promise<void> {
@@ -619,6 +549,10 @@ async function writeSearchScript(): Promise<void> {
   await copyFile(path.join(ROOT, "src", "search-client.js"), path.join(SITE_DIR, "assets", "search.js"));
 }
 
+async function writePaginationScript(): Promise<void> {
+  await copyFile(path.join(ROOT, "src", "pagination-client.js"), path.join(SITE_DIR, "assets", "pagination.js"));
+}
+
 async function writePostScript(): Promise<void> {
   await copyFile(path.join(ROOT, "src", "post-client.js"), path.join(SITE_DIR, "assets", "post.js"));
 }
@@ -626,14 +560,15 @@ async function writePostScript(): Promise<void> {
 async function build(): Promise<void> {
   await rm(POSTS_OUT_DIR, { recursive: true, force: true });
   await rm(TAGS_OUT_DIR, { recursive: true, force: true });
-  await rm(PAGES_OUT_DIR, { recursive: true, force: true });
+  await rm(path.join(SITE_DIR, "pages"), { recursive: true, force: true });
   await rm(UPLOADS_OUT_DIR, { recursive: true, force: true });
   const posts = await readPosts();
   await writePostPages(posts);
   await writeTagPages(posts);
-  await writeIndexPages(posts);
+  await writeIndexPage(posts);
   await writeFeedData(posts);
   await writeSearchScript();
+  await writePaginationScript();
   await writePostScript();
   console.log(`Generated ${posts.length} post pages, tags, index, and search data.`);
 }
