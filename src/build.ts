@@ -174,6 +174,19 @@ function escapeHtml(value: string): string {
     .replaceAll("'", "&#39;");
 }
 
+function applyImageCaptions(html: string): string {
+  return html.replace(
+    /<img([^>]*?)alt="([^"]+)"([^>]*)>/g,
+    (match, before, alt, after) => {
+      const trimmed = alt.trim();
+      if (!trimmed) {
+        return match;
+      }
+      return `<figure class="post-image">${match}<figcaption>${escapeHtml(trimmed)}</figcaption></figure>`;
+    }
+  );
+}
+
 function renderTagPillsWithPrefix(tags: string[], rootPrefix: string): string {
   return tags
     .map(
@@ -465,7 +478,7 @@ async function readPosts(): Promise<Post[]> {
     const excerpt = assertString(parsed.data.excerpt, "excerpt");
     const tags = normalizeTags(parsed.data.tags);
     const markdownWithAssets = await rewriteMarkdownImages(parsed.content, slug, path.dirname(filePath));
-    const html = await marked.parse(markdownWithAssets);
+    const html = applyImageCaptions(await marked.parse(markdownWithAssets));
     const content = sanitizeForSearch(parsed.content);
 
     posts.push({
