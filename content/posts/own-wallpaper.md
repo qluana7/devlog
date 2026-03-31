@@ -2,7 +2,7 @@
 title: "[뻘글] 직접 만든 배경"
 slug: "own-wallpaper"
 date: "2021-09-04"
-excerpt: "리눅스 x 윈도우 듀얼 부팅 후 리눅스에 쓸 배경이 필요해서 직접 파워포인트로 제작해보았다. ![](https://blog.kakaocdn.net/dna/b2sroz/btrd15t6Jo0/AAAAAAAAAAAAAAAAAAAAABhdp_wGYvB4IvqKs6kVe9lxU"
+excerpt: "리눅스 x 윈도우 듀얼 부팅 후 리눅스에 쓸 배경이 필요해서 직접 파워포인트로 제작해보았다."
 tags:
   - "Background"
   - "coding"

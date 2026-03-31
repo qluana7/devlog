@@ -2,7 +2,7 @@
 title: "Visual Studio 종속 파일 만들기"
 slug: "vs-file-dependent"
 date: "2021-06-09"
-excerpt: "비주얼 스튜디오 팁 가끔 그럴때가 있다. 내가 만든 cs파일 (예를 들어 Form.Init)을 Form.Designer.cs 처럼 특정 폼에 종속시켜버리고 싶은 경우가 있다. 아래의 사진과 같이 말이다 ![](https://blog.kakaocdn.net/dna/3np"
+excerpt: "비주얼 스튜디오 팁 가끔 그럴때가 있다. 내가 만든 cs파일 (예를 들어 Form.Init)을 Form.Designer.cs 처럼 특정 폼에 종속시켜버리고 싶은 경우가 있다. 아래의 사진과 같이 말이다"
 tags:
   - "csproj"
   - "dependentupon"
