@@ -226,6 +226,7 @@ function setupCodeCopyButtons() {
   }
 }
 
+
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     setupCodeCopyButtons();

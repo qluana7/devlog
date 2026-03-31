@@ -246,6 +246,19 @@ function renderLayout(title: string, body: string, rootPrefix: string): string {
   <title>${escapeHtml(title)}</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="${rootPrefix}/assets/styles.css">
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$']],
+        displayMath: [['$$', '$$']],
+        processEscapes: true
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
   ${engagementConfigScript}
   <script defer src="${rootPrefix}/assets/search.js"></script>
   <script defer src="${rootPrefix}/assets/pagination.js"></script>

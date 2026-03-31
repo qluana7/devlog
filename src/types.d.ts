@@ -6,6 +6,7 @@ declare module "marked-highlight" {
   }): { name: string; renderer?: any };
 }
 
+
 declare global {
   var __ENGAGEMENT_CONFIG__:
     | {
