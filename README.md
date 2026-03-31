@@ -165,6 +165,12 @@ tags:
 
 코드 블록은 fenced code block(````ts`, ` ```bash `)을 사용하면 자동 하이라이트됩니다.
 
+이미지 첨부:
+
+- 포스트 markdown 안에서 상대 경로 이미지를 사용하면 빌드시 자동 복사됩니다.
+- 예: `![diagram](./images/diagram.png)`
+- 출력 위치: `site/assets/uploads/<post-slug>/`
+
 ## 배포
 
 - `.github/workflows/deploy.yml` 이 `main` 브랜치 push 때 빌드 후 Pages로 배포합니다.

@@ -35,3 +35,17 @@ npm run build
 ```ts
 console.log("Hello, blog");
 ```
+
+## 이미지 첨부
+
+포스트 파일 기준 상대 경로 이미지를 그대로 넣으면, 빌드시 자동으로 `site/assets/uploads/<slug>/`로 복사됩니다.
+
+```md
+![대체 텍스트](./images/example.png)
+```
+
+원격 URL은 그대로 사용됩니다.
+
+```md
+![logo](https://example.com/logo.png)
+```

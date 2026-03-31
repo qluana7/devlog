@@ -31,6 +31,12 @@
     overflow-x: auto;
   }
 
+  .prose img {
+    border-radius: 0.75rem;
+    border: 1px solid rgba(148, 163, 184, 0.24);
+    box-shadow: 0 10px 26px rgba(2, 6, 23, 0.28);
+  }
+
   .code-copy-button {
     position: absolute;
     right: 0.5rem;

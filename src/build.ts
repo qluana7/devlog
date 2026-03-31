@@ -1,4 +1,4 @@
-import { copyFile, mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, readdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { config as loadEnv } from "dotenv";
 import matter from "gray-matter";
@@ -26,6 +26,7 @@ const CONTENT_DIR = path.join(ROOT, "content", "posts");
 const SITE_DIR = path.join(ROOT, "site");
 const POSTS_OUT_DIR = path.join(SITE_DIR, "posts");
 const TAGS_OUT_DIR = path.join(SITE_DIR, "tags");
+const UPLOADS_OUT_DIR = path.join(SITE_DIR, "assets", "uploads");
 
 const GISCUS_CONFIG = {
   enabled: (process.env.GISCUS_ENABLED ?? "true") === "true",
@@ -90,6 +91,77 @@ function sanitizeForSearch(markdown: string): string {
     .replace(/[#>*_~\-]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function isExternalAsset(target: string): boolean {
+  return /^(https?:\/\/|data:|mailto:|#|\/)/i.test(target);
+}
+
+function splitMarkdownDestination(raw: string): { target: string; trailing: string } {
+  const trimmed = raw.trim();
+  const match = trimmed.match(/^(\S+)(\s+["'][\s\S]*["'])$/);
+  if (match) {
+    return { target: match[1], trailing: match[2] };
+  }
+  return { target: trimmed, trailing: "" };
+}
+
+async function rewriteMarkdownImages(markdown: string, slug: string, sourceDir: string): Promise<string> {
+  const pattern = /!\[([^\]]*)\]\(([^)]+)\)/g;
+  const copied = new Map<string, string>();
+  let rebuilt = "";
+  let lastIndex = 0;
+  let assetIndex = 0;
+
+  for (const match of markdown.matchAll(pattern)) {
+    const start = match.index ?? 0;
+    const fullMatch = match[0];
+    const altText = match[1];
+    const destinationRaw = match[2];
+
+    rebuilt += markdown.slice(lastIndex, start);
+
+    const { target, trailing } = splitMarkdownDestination(destinationRaw);
+    const normalizedTarget =
+      target.startsWith("<") && target.endsWith(">") ? target.slice(1, -1).trim() : target.trim();
+
+    if (!normalizedTarget || isExternalAsset(normalizedTarget)) {
+      rebuilt += fullMatch;
+      lastIndex = start + fullMatch.length;
+      continue;
+    }
+
+    const sourcePath = path.resolve(sourceDir, normalizedTarget);
+    try {
+      const sourceStat = await stat(sourcePath);
+      if (!sourceStat.isFile()) {
+        rebuilt += fullMatch;
+        lastIndex = start + fullMatch.length;
+        continue;
+      }
+
+      let publicPath = copied.get(sourcePath);
+      if (!publicPath) {
+        assetIndex += 1;
+        const ext = path.extname(sourcePath) || ".bin";
+        const fileName = `${String(assetIndex).padStart(2, "0")}${ext.toLowerCase()}`;
+        const postUploadDir = path.join(UPLOADS_OUT_DIR, slug);
+        await mkdir(postUploadDir, { recursive: true });
+        await copyFile(sourcePath, path.join(postUploadDir, fileName));
+        publicPath = `../assets/uploads/${encodeURIComponent(slug)}/${encodeURIComponent(fileName)}`;
+        copied.set(sourcePath, publicPath);
+      }
+
+      rebuilt += `![${altText}](${publicPath}${trailing})`;
+    } catch {
+      rebuilt += fullMatch;
+    }
+
+    lastIndex = start + fullMatch.length;
+  }
+
+  rebuilt += markdown.slice(lastIndex);
+  return rebuilt;
 }
 
 function escapeHtml(value: string): string {
@@ -372,7 +444,8 @@ async function readPosts(): Promise<Post[]> {
     const date = assertString(parsed.data.date, "date");
     const excerpt = assertString(parsed.data.excerpt, "excerpt");
     const tags = normalizeTags(parsed.data.tags);
-    const html = await marked.parse(parsed.content);
+    const markdownWithAssets = await rewriteMarkdownImages(parsed.content, slug, path.dirname(filePath));
+    const html = await marked.parse(markdownWithAssets);
     const content = sanitizeForSearch(parsed.content);
 
     posts.push({
@@ -463,6 +536,7 @@ async function writePostScript(): Promise<void> {
 async function build(): Promise<void> {
   await rm(POSTS_OUT_DIR, { recursive: true, force: true });
   await rm(TAGS_OUT_DIR, { recursive: true, force: true });
+  await rm(UPLOADS_OUT_DIR, { recursive: true, force: true });
   const posts = await readPosts();
   await writePostPages(posts);
   await writeTagPages(posts);
