@@ -19,7 +19,72 @@
 
 @layer components {
   pre {
+    position: relative;
+    border-radius: 0.75rem;
+    padding-top: 2.5rem;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 12px 28px rgba(2, 6, 23, 0.35);
+  }
+
+  pre code {
+    display: block;
+    overflow-x: auto;
+  }
+
+  .code-copy-button {
+    position: absolute;
+    right: 0.5rem;
+    top: 0.5rem;
+    display: inline-flex;
+    height: 2rem;
+    width: 2rem;
+    align-items: center;
+    justify-content: center;
     border-radius: 0.5rem;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    background: rgba(11, 18, 32, 0.82);
+    color: #9fb4c8;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-2px);
+    transition: border-color 0.18s ease, color 0.18s ease, transform 0.18s ease, opacity 0.18s ease;
+  }
+
+  pre:hover .code-copy-button,
+  pre:focus-within .code-copy-button {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .code-copy-button:hover {
+    border-color: rgba(45, 212, 191, 0.55);
+    color: #2dd4bf;
+    transform: translateY(-1px);
+  }
+
+  .code-copy-button svg {
+    width: 0.95rem;
+    height: 0.95rem;
+  }
+
+  .code-copy-button.copied {
+    @apply text-accent border-accent/50;
+  }
+
+  .code-copy-button.failed {
+    color: #fca5a5;
+    border-color: rgba(252, 165, 165, 0.55);
+  }
+
+  .post-like-button {
+    @apply inline-flex items-center gap-1 rounded px-2 py-0.5 text-xs text-subtle border border-border/20 hover:border-accent/40 hover:text-accent;
+  }
+
+  .post-like-button.active {
+    color: #fda4af;
+    border-color: rgba(244, 114, 182, 0.55);
+    background: rgba(244, 114, 182, 0.09);
   }
 
   .post-card {
@@ -27,8 +92,8 @@
   }
 
   .hljs {
-    color: #d8e6f5;
-    background: #071025;
+    color: #e5eef8;
+    background: linear-gradient(180deg, #091326 0%, #071025 100%);
   }
 
   .hljs-keyword,
@@ -56,6 +121,18 @@
   .hljs-quote,
   .hljs-deletion,
   .hljs-meta {
-    color: #91a8be;
+    color: #8da5be;
+  }
+
+  .hljs-built_in,
+  .hljs-type,
+  .hljs-class,
+  .hljs-function,
+  .hljs-variable,
+  .hljs-property,
+  .hljs-symbol,
+  .hljs-params,
+  .hljs-tag {
+    color: #c4b5fd;
   }
 }

@@ -5,3 +5,15 @@ declare module "marked-highlight" {
     highlight: (code: string, lang: string, info?: string) => string | Promise<string>;
   }): { name: string; renderer?: any };
 }
+
+declare global {
+  var __ENGAGEMENT_CONFIG__:
+    | {
+        enabled: boolean;
+        supabaseUrl: string;
+        supabaseAnonKey: string;
+      }
+    | undefined;
+}
+
+export {};

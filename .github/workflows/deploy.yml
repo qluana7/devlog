@@ -31,6 +31,18 @@ jobs:
         run: npm ci
 
       - name: Build static site
+        env:
+          GISCUS_ENABLED: ${{ secrets.GISCUS_ENABLED }}
+          GISCUS_REPO: ${{ secrets.GISCUS_REPO }}
+          GISCUS_REPO_ID: ${{ secrets.GISCUS_REPO_ID }}
+          GISCUS_CATEGORY: ${{ secrets.GISCUS_CATEGORY }}
+          GISCUS_CATEGORY_ID: ${{ secrets.GISCUS_CATEGORY_ID }}
+          GISCUS_MAPPING: ${{ secrets.GISCUS_MAPPING }}
+          GISCUS_STRICT: ${{ secrets.GISCUS_STRICT }}
+          GISCUS_THEME: ${{ secrets.GISCUS_THEME }}
+          ENGAGEMENT_ENABLED: ${{ secrets.ENGAGEMENT_ENABLED }}
+          ENGAGEMENT_SUPABASE_URL: ${{ secrets.ENGAGEMENT_SUPABASE_URL }}
+          ENGAGEMENT_SUPABASE_ANON_KEY: ${{ secrets.ENGAGEMENT_SUPABASE_ANON_KEY }}
         run: npm run build
 
       - name: Setup Pages
