@@ -2,7 +2,7 @@
 title: "ABC 451 후기"
 slug: "ac-abc451-review"
 date: "2026-03-28"
-excerpt: "한 줄 요약을 작성하세요."
+excerpt: "후기  2번째 앳코더를 무사히 마쳤습니다!! 이번 앳코는 C번까지는 아주 순조롭게 풀었던거 같네요!"
 tags:
   - atcoder
   - abc
