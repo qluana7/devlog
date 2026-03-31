@@ -28,7 +28,19 @@ function getVisitorId() {
   return random;
 }
 
-function fallbackLocalLikes(slug, likeButton, likeCount) {
+function fallbackLocalEngagement(slug, likeButton, likeCount, viewCount) {
+  const today = new Date().toISOString().slice(0, 10);
+  const viewedTodayKey = `dev-blog:viewed:${slug}:${today}`;
+  const viewCountKey = `dev-blog:view-count:${slug}`;
+
+  if (localStorage.getItem(viewedTodayKey) !== '1') {
+    const current = Number(localStorage.getItem(viewCountKey) || '0');
+    localStorage.setItem(viewCountKey, String(current + 1));
+    localStorage.setItem(viewedTodayKey, '1');
+  }
+
+  viewCount.textContent = localStorage.getItem(viewCountKey) || '1';
+
   const key = `dev-blog:like:${slug}`;
   const liked = localStorage.getItem(key) === '1';
   likeButton.classList.toggle('active', liked);
@@ -136,7 +148,7 @@ async function setupEngagement() {
 
   const config = globalThis.__ENGAGEMENT_CONFIG__;
   if (!config || !config.enabled || !config.supabaseUrl || !config.supabaseAnonKey) {
-    fallbackLocalLikes(context.slug, likeButton, likeCount);
+    fallbackLocalEngagement(context.slug, likeButton, likeCount, viewCount);
     return;
   }
 
@@ -169,7 +181,7 @@ async function setupEngagement() {
       }
     });
   } catch {
-    fallbackLocalLikes(context.slug, likeButton, likeCount);
+    fallbackLocalEngagement(context.slug, likeButton, likeCount, viewCount);
   }
 }
 
