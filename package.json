@@ -1,0 +1,28 @@
+{
+  "name": "dev-blog-static",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "prepare:site": "node -e \"require('fs').mkdirSync('site/assets', { recursive: true })\"",
+    "build:scripts": "tsgo -p tsconfig.json",
+    "build:site": "npm run build:scripts && node build-scripts/build.js",
+    "build:css": "tailwindcss -c tailwind.config.cjs -i ./src/styles.css -o ./site/assets/styles.css --minify",
+    "build": "npm run prepare:site && npm run build:site && npm run build:css",
+    "new:post": "npm run build:scripts && node build-scripts/new-post.js"
+  },
+  "devDependencies": {
+    "@tailwindcss/typography": "^0.5.19",
+    "@types/node": "^22.15.14",
+    "@typescript/native-preview": "^7.0.0-dev.20260330.1",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.18"
+  },
+  "dependencies": {
+    "gray-matter": "^4.0.3",
+    "highlight.js": "^11.11.1",
+    "marked": "^15.0.12",
+    "marked-highlight": "^2.2.2"
+  }
+}

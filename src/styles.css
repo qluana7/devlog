@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    line-height: 1.6;
+  }
+
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Fira Code", "Roboto Mono", monospace;
+  }
+}
+
+@layer components {
+  pre {
+    border-radius: 0.5rem;
+  }
+
+  .post-card {
+    @apply rounded-lg p-5 bg-muted-surface/50 border border-border/20 transition hover:-translate-y-0.5;
+  }
+
+  .hljs {
+    color: #d8e6f5;
+    background: #071025;
+  }
+
+  .hljs-keyword,
+  .hljs-selector-tag,
+  .hljs-title,
+  .hljs-section,
+  .hljs-doctag,
+  .hljs-name,
+  .hljs-strong {
+    color: #7dd3fc;
+  }
+
+  .hljs-string,
+  .hljs-attr,
+  .hljs-template-tag,
+  .hljs-template-variable,
+  .hljs-number,
+  .hljs-regexp,
+  .hljs-literal,
+  .hljs-link {
+    color: #5eead4;
+  }
+
+  .hljs-comment,
+  .hljs-quote,
+  .hljs-deletion,
+  .hljs-meta {
+    color: #91a8be;
+  }
+}
