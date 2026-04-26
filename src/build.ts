@@ -28,6 +28,13 @@ const POSTS_OUT_DIR = path.join(SITE_DIR, "posts");
 const TAGS_OUT_DIR = path.join(SITE_DIR, "tags");
 const UPLOADS_OUT_DIR = path.join(SITE_DIR, "assets", "uploads");
 const POSTS_PER_PAGE = 8;
+const SITE_URL = (process.env.SITE_URL ?? "").replace(/\/$/, "");
+
+type LayoutMeta = {
+  description: string;
+  path: string;
+  type: "website" | "article";
+};
 
 const GISCUS_CONFIG = {
   enabled: (process.env.GISCUS_ENABLED ?? "true") === "true",
@@ -174,6 +181,17 @@ function escapeHtml(value: string): string {
     .replaceAll("'", "&#39;");
 }
 
+function toAbsoluteUrl(pathOrUrl: string): string {
+  if (/^https?:\/\//i.test(pathOrUrl)) {
+    return pathOrUrl;
+  }
+  if (!SITE_URL) {
+    return "";
+  }
+  const normalized = pathOrUrl.startsWith("/") ? pathOrUrl : `/${pathOrUrl}`;
+  return `${SITE_URL}${normalized}`;
+}
+
 function applyImageCaptions(html: string): string {
   return html.replace(
     /<img([^>]*?)alt="([^"]+)"([^>]*)>/g,
@@ -231,12 +249,15 @@ function renderProfileCard(): string {
     </aside>`;
 }
 
-function renderLayout(title: string, body: string, rootPrefix: string): string {
+function renderLayout(title: string, body: string, rootPrefix: string, meta: LayoutMeta): string {
   const engagementConfigScript = `<script>window.__ENGAGEMENT_CONFIG__={enabled:${
     ENGAGEMENT_CONFIG.enabled ? "true" : "false"
   },supabaseUrl:${JSON.stringify(ENGAGEMENT_CONFIG.supabaseUrl)},supabaseAnonKey:${JSON.stringify(
     ENGAGEMENT_CONFIG.supabaseAnonKey
   )}};</script>`;
+
+  const absolutePageUrl = toAbsoluteUrl(meta.path);
+  const canonicalLink = absolutePageUrl ? `<link rel="canonical" href="${escapeHtml(absolutePageUrl)}">` : "";
 
   return `<!doctype html>
 <html lang="ko" class="">
@@ -244,6 +265,16 @@ function renderLayout(title: string, body: string, rootPrefix: string): string {
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>${escapeHtml(title)}</title>
+  <meta name="description" content="${escapeHtml(meta.description)}">
+  <meta property="og:type" content="${meta.type}">
+  <meta property="og:site_name" content="Devlog">
+  <meta property="og:title" content="${escapeHtml(title)}">
+  <meta property="og:description" content="${escapeHtml(meta.description)}">
+  <meta property="og:url" content="${escapeHtml(absolutePageUrl)}">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="${escapeHtml(title)}">
+  <meta name="twitter:description" content="${escapeHtml(meta.description)}">
+  ${canonicalLink}
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="${rootPrefix}/assets/styles.css">
   <script>
@@ -516,7 +547,12 @@ async function writePostPages(posts: Post[]): Promise<void> {
       const previousPost = index < posts.length - 1 ? posts[index + 1] : undefined;
       const nextPost = index > 0 ? posts[index - 1] : undefined;
 
-      const html = renderLayout(post.title, renderPostBody(post, previousPost, nextPost), "..");
+      const pagePath = `/posts/${post.slug}.html`;
+      const html = renderLayout(post.title, renderPostBody(post, previousPost, nextPost), "..", {
+        description: post.excerpt,
+        path: pagePath,
+        type: "article"
+      });
       const filePath = path.join(POSTS_OUT_DIR, `${post.slug}.html`);
       return writeFile(filePath, html, "utf8");
     })
@@ -546,7 +582,11 @@ async function writeTagPages(posts: Post[]): Promise<void> {
   await Promise.all(
     sortedTags.map(async ([tag]) => {
       const taggedPosts = posts.filter((post) => post.tags.includes(tag));
-      const html = renderLayout(`#${tag} posts`, renderTagPageBody(tag, taggedPosts, sortedTags), "..");
+      const html = renderLayout(`#${tag} posts`, renderTagPageBody(tag, taggedPosts, sortedTags), "..", {
+        description: `#${tag} 태그로 분류된 개발 글 모음`,
+        path: `/tags/${encodeURIComponent(tag)}.html`,
+        type: "website"
+      });
       const filePath = path.join(TAGS_OUT_DIR, `${encodeURIComponent(tag)}.html`);
       await writeFile(filePath, html, "utf8");
     })
@@ -554,7 +594,11 @@ async function writeTagPages(posts: Post[]): Promise<void> {
 }
 
 async function writeIndexPage(posts: Post[]): Promise<void> {
-  const html = renderLayout("Devlog", renderIndexBody(posts), ".");
+  const html = renderLayout("Devlog", renderIndexBody(posts), ".", {
+    description: "C++, TypeScript, Assembly 중심의 개발 기록과 삽질 노트",
+    path: "/index.html",
+    type: "website"
+  });
   await writeFile(path.join(SITE_DIR, "index.html"), html, "utf8");
 }
 

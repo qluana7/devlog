@@ -40,6 +40,7 @@ jobs:
           GISCUS_MAPPING: ${{ secrets.GISCUS_MAPPING }}
           GISCUS_STRICT: ${{ secrets.GISCUS_STRICT }}
           GISCUS_THEME: ${{ secrets.GISCUS_THEME }}
+          SITE_URL: ${{ secrets.SITE_URL }}
           ENGAGEMENT_ENABLED: ${{ secrets.ENGAGEMENT_ENABLED }}
           ENGAGEMENT_SUPABASE_URL: ${{ secrets.ENGAGEMENT_SUPABASE_URL }}
           ENGAGEMENT_SUPABASE_ANON_KEY: ${{ secrets.ENGAGEMENT_SUPABASE_ANON_KEY }}

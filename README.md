@@ -42,6 +42,7 @@ cp .env.example .env
 - `GISCUS_MAPPING=pathname`
 - `GISCUS_STRICT=0`
 - `GISCUS_THEME=dark_dimmed`
+- `SITE_URL=https://<your-domain>` (Discord/Slack 임베드용 OG 절대 URL)
 
 4. 로컬 확인: `npm run build`
 5. GitHub Actions 배포용으로 동일 값을 Repository Secrets에 등록
