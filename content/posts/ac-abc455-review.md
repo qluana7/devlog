@@ -2,7 +2,7 @@
 title: "ABC 455 후기"
 slug: "ac-abc455-review"
 date: "2026-04-25"
-excerpt: "한 줄 요약을 작성하세요."
+excerpt: "벌써 5번째 앳코더네요! 슬슬 앳코더에 적응해가고 있는거 같네요. 빠르게 후기로 가보도록 하죠!"
 tags:
   - atcoder
   - abc
