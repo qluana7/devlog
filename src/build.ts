@@ -205,6 +205,45 @@ function applyImageCaptions(html: string): string {
   );
 }
 
+function applySpoilers(html: string): string {
+  const protectedBlocks: string[] = [];
+  const protect = (input: string): string => {
+    return input.replace(/<(pre|code)[\s\S]*?<\/\1>/gi, (block) => {
+      const token = `@@PROTECTED_${protectedBlocks.length}@@`;
+      protectedBlocks.push(block);
+      return token;
+    });
+  };
+
+  const restore = (input: string): string => {
+    let out = input;
+    for (let i = 0; i < protectedBlocks.length; i += 1) {
+      out = out.replace(`@@PROTECTED_${i}@@`, protectedBlocks[i]);
+    }
+    return out;
+  };
+
+  const containsBlockTag = (value: string): boolean => {
+    return /<(p|div|figure|section|article|ul|ol|li|table|blockquote|h[1-6]|hr|pre|img)\b/i.test(value);
+  };
+
+  const masked = protect(html);
+  const transformed = masked.replace(/\|\|([\s\S]*?)\|\|/g, (_m, innerRaw) => {
+    const inner = innerRaw.trim();
+    if (!inner) {
+      return _m;
+    }
+
+    if (containsBlockTag(inner)) {
+      return `<div class="spoiler spoiler-block" tabindex="0" role="button" aria-label="Spoiler"><div class="spoiler-content">${inner}</div></div>`;
+    }
+
+    return `<span class="spoiler" tabindex="0" role="button" aria-label="Spoiler"><span class="spoiler-content">${inner}</span></span>`;
+  });
+
+  return restore(transformed);
+}
+
 function renderTagPillsWithPrefix(tags: string[], rootPrefix: string): string {
   return tags
     .map(
@@ -522,7 +561,7 @@ async function readPosts(): Promise<Post[]> {
     const excerpt = assertString(parsed.data.excerpt, "excerpt");
     const tags = normalizeTags(parsed.data.tags);
     const markdownWithAssets = await rewriteMarkdownImages(parsed.content, slug, path.dirname(filePath));
-    const html = applyImageCaptions(await marked.parse(markdownWithAssets));
+    const html = applySpoilers(applyImageCaptions(await marked.parse(markdownWithAssets)));
     const content = sanitizeForSearch(parsed.content);
 
     posts.push({

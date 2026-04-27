@@ -226,13 +226,36 @@ function setupCodeCopyButtons() {
   }
 }
 
+function setupSpoilers() {
+  const spoilers = document.querySelectorAll('.spoiler');
+  if (!spoilers.length) return;
+
+  for (const spoiler of spoilers) {
+    if (spoiler.querySelector('img')) {
+      spoiler.classList.add('spoiler-image');
+    }
+
+    spoiler.addEventListener('click', () => {
+      spoiler.classList.toggle('revealed');
+    });
+
+    spoiler.addEventListener('keydown', (event) => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      event.preventDefault();
+      spoiler.classList.toggle('revealed');
+    });
+  }
+}
+
 
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     setupCodeCopyButtons();
     setupEngagement();
+    setupSpoilers();
   });
 } else {
   setupCodeCopyButtons();
   setupEngagement();
+  setupSpoilers();
 }

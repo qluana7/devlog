@@ -75,6 +75,58 @@
     font-size: 0.78rem;
   }
 
+  .spoiler {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    border-radius: 0.32rem;
+    outline: none;
+  }
+
+  .spoiler-block {
+    display: block;
+    margin: 0.8rem 0;
+  }
+
+  .spoiler .spoiler-content {
+    display: inline-block;
+    filter: blur(0.35rem);
+    transition: filter 0.18s ease, opacity 0.18s ease;
+    background: rgba(148, 163, 184, 0.2);
+    border-radius: 0.32rem;
+    padding: 0.05rem 0.2rem;
+  }
+
+  .spoiler.spoiler-block .spoiler-content {
+    display: block;
+    background: rgba(148, 163, 184, 0.16);
+    padding: 0.35rem;
+  }
+
+  .spoiler.spoiler-image .spoiler-content {
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    display: inline-block;
+  }
+
+  .spoiler.spoiler-image,
+  .spoiler.spoiler-image.spoiler-block {
+    display: table;
+    margin: 0.8rem auto;
+    max-width: 100%;
+  }
+
+  .spoiler.spoiler-image .spoiler-content img {
+    margin: 0;
+  }
+
+  .spoiler:hover .spoiler-content,
+  .spoiler:focus-visible .spoiler-content,
+  .spoiler.revealed .spoiler-content {
+    filter: blur(0);
+  }
+
   .code-copy-button {
     position: absolute;
     right: 0.5rem;
