@@ -18,13 +18,13 @@ tags:
 <p id="SE-52b7bb3d-28d1-4338-8a73-a7a8e2fdc376">​</p>
 <p>C# 8.0의 기능이 궁금한 분들은 아래 링크를 들어가 보길 바란다.</p>
 
-<div class="embed-card"><a class="embed-card-link" href="https://docs.microsoft.com/ko-kr/dotnet/csharp/whats-new/csharp-8" target="_blank" rel="noreferrer noopener"><div class="embed-card-media"><img src="https://blog.kakaocdn.net/dna/btDi1y/hyKwy35iyw/AAAAAAAAAAAAAAAAAAAAAGEz-w7H8zQQrbhPXZufHxCMO93l_EnBux6U2pa3vbbt/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1774969199&allow_ip=&allow_referer=&signature=xhIixrh5KkJTdO6mGiezLWWwy4I%3D" alt="C# 8.0의 새로운 기능 - C# 가이드" loading="lazy" /></div><div class="embed-card-body"><p class="embed-card-title">C# 8.0의 새로운 기능 - C# 가이드</p><p class="embed-card-desc">C# 8.0의 새로운 기능을 살펴봅니다.</p><p class="embed-card-host">docs.microsoft.com</p></div></a></div>
+<div class="embed-card"><a class="embed-card-link embed-card-no-media" href="https://learn.microsoft.com/ko-kr/dotnet/csharp/whats-new/csharp-8" target="_blank" rel="noreferrer noopener"><div class="embed-card-body"><p class="embed-card-title">C# 8.0의 새로운 기능 - C# 가이드</p><p class="embed-card-desc">C# 8.0에서 추가된 언어 기능을 설명하는 공식 문서입니다.</p><p class="embed-card-host">learn.microsoft.com</p></div></a></div>
 
 <p id="SE-7dfb318c-a81b-4801-8042-1280c95229d9">​</p>
 <p id="SE-68713110-362f-43fd-8473-e00681b1c70c">닷넷 프레임워크를 사용하다보면 8.0을 사용하고 싶은 경우가 있다. 그래서 설정에 빌드 탭에서 자주 찾곤 하는데 프레임워크의 경우 기본값으로 고정이 되어있다.</p>
 <p>
 
-![](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/6556bb89769bba92caa780f30f82e674.png)
+![Visual Studio 프로젝트의 C# 언어 버전 설정 화면](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/6556bb89769bba92caa780f30f82e674.png)
 
 </p>
 <p id="SE-819fa87e-6e67-4f88-b5e4-0005b4764229">이에 따라 버전을 선택할수가 없는데 8.0 기능을 사용 가능하게 할수 있다(!!)</p>
@@ -35,14 +35,14 @@ tags:
 <p id="SE-21e6b1e3-24cb-4484-80f7-5e36673eac6f">첫번째 방법.</p>
 <p>
 
-![](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/dd55b3e866959b6c709cf0573f0a0e85.png)
+![C# 7.3에서 C# 8.0 문법을 사용했을 때의 컴파일 오류](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/dd55b3e866959b6c709cf0573f0a0e85.png)
 
 </p>
 <p id="SE-c29fca86-3cb6-4c75-a44d-79bcab6fcc9d">7.3 버전에서 8.0의 기능을 사용하면 컴파일러가 '나는 버전이 7.3인데 어떻게 하라구!'라며 화를 낸다</p>
 <p id="SE-03d9abf4-f7d5-45da-884b-a9062d87e4e8">이럴때 잠재적 수정 사항 표시를 클릭하거나 옆에 보이는 단축키를 통해서 아래의 그림을 클릭하면 된다</p>
 <p>
 
-![](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/151d30f2b4ef424f8daa51e37c011722.png)
+![Visual Studio의 C# 8.0 업그레이드 빠른 작업](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/151d30f2b4ef424f8daa51e37c011722.png)
 
 </p>
 <p id="SE-7f9fbcc9-0e28-4cd4-ab2f-da61ccd91166">그러면 8.0 업그레이드가 끝난것이다</p>
@@ -80,7 +80,7 @@ tags:
 <p id="SE-e3072cef-58de-46e3-8ddf-745285f92730">​</p>
 <p>
 
-![](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/a8b178d4b774e63b64a076baa882da3f.png)
+![csproj의 LangVersion 설정 예시](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/a8b178d4b774e63b64a076baa882da3f.png)
 
 </p>
 <p id="SE-195d93d9-01fb-4e65-bafa-31064cbb7884">몇가지 재밌는 것은 Debug에는 8.0이라 적고 Release에는 7.3이라고 적으면 컴파일러는 이를 다르게 인식한다.</p>

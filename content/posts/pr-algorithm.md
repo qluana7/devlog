@@ -139,7 +139,7 @@ public static ulong DnCFibonacci(int N)
 <p>아래는 실제 코드를 돌려서 구한 시간으로 피보나치 수열 49번째를 구하는데 걸린 시간은 재귀함수가 무려 1분을 넘겼고 다른 알고리즘은 1초 조차 안 넘긴 모습이다.</p>
 <p>
 
-![](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/6c28bdf73d53268cc9245602d4df0162.png)
+![재귀 함수 예제의 실행 결과](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/6c28bdf73d53268cc9245602d4df0162.png)
 
 </p>
 <p>이에 대한 내용들은 인터넷에도 많이 널려 있으니 검색해서 찾아보길 바란다.</p>

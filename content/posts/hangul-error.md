@@ -21,7 +21,7 @@ tags:
 <p>이 단축키에 문제가 있다. 바로 이 단축키를 입력하는 순간 다음과 같은 이미지가 나오면서 한글이 조합이 되지 않는다</p>
 <p>
 
-![](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/f8f23173fc5776e9edb2dfbac26dfb5c.png)
+![한글 조합이 분리되어 입력되는 문제](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/f8f23173fc5776e9edb2dfbac26dfb5c.png)
 
 </p>
 <p id="SE-55316def-0ffb-4142-9b7c-fb02ee882059">Alt + F4 장난에 더불어 이도 많은 채팅방이나 커뮤니티에서 사용되고 있는 장난인데</p>
@@ -34,7 +34,7 @@ tags:
 <p id="SE-2fab9ca4-fd59-4ea5-856c-356576d94613">세부 정보 중에서 TextInputHost를 찾으면 되는데 아무 프로세스나 클릭하고 철자를 차례대로 입력하면 바로 찾아진다.</p>
 <p>
 
-![](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/7ebe57c0f4ad1d9da66ee1d84e7041e7.png)
+![Windows 입력 언어 바로 가기 키 설정](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/7ebe57c0f4ad1d9da66ee1d84e7041e7.png)
 
 </p>
 <p id="SE-4799037c-a506-4421-8f36-c30ee82188bc">이를 찾았다면 작업끝내기로 종료를 해준다. 그렇게 하면 TextInputHost가 재시작되면서 한글이 조합되어 나오게 된다.</p>

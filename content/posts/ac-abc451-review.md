@@ -21,7 +21,7 @@ tags:
 
 이번 앳코는 C번까지는 아주 순조롭게 풀었던거 같네요! C까지 푸는데 14분밖에 안썼다는 사실!!
 
-![](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/ac-abc451-review-image1.png)
+![ABC 451 문제 풀이 결과](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/ac-abc451-review-image1.png)
 
 <p><br/></p>
 
@@ -88,4 +88,4 @@ DFS를 이용하신 분도 있었는데, 이것도 꽤 빠르더라구요!
 
 레이팅 변동 : 75 → 240 (+165)
 
-![](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/ac-abc451-review-image3.png)
+![ABC 451 참가 후 레이팅 변동](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/ac-abc451-review-image3.png)

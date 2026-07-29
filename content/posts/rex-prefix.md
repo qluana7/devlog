@@ -35,7 +35,7 @@ mov rax, edx
 <p>이 코드를 바이트 코드 형태로 분석해보자.</p>
 <p>
 
-![](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/2c292c920270ffe37183007fe860c5af.png)
+![REX.W가 포함된 64비트 mov 명령어](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/2c292c920270ffe37183007fe860c5af.png)
 
 </p>
 <p>48 : REX.W</p>
@@ -49,7 +49,7 @@ mov rax, edx
 <p>64bits에서 rax와 rdx 대신, eax와 edx를 쓴다면?</p>
 <p>
 
-![](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/ce7ed6a49440210c3ea9df280e8ec3d1.png)
+![REX.W가 없는 32비트 mov 명령어](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/ce7ed6a49440210c3ea9df280e8ec3d1.png)
 
 </p>
 <p>보이는 것 처럼 REX.W라는 prefix가 사라진 것이 보일 것이다.</p>
@@ -106,7 +106,7 @@ Extension of r/m field, base field, or opcode reg field
 <p>R은 아래의 ModR/M 표를 보면 알 수 있다.</p>
 <p>
 
-![](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/9ab778375236752faafcc1c546712fb5.png)
+![REX 확장이 표시된 ModR/M 인코딩 표](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/9ab778375236752faafcc1c546712fb5.png)
 
 </p>
 <p>오른쪽에 보면 REX.R = 1이라는 부분이 보일 것이다.</p>
@@ -124,7 +124,7 @@ Extension of r/m field, base field, or opcode reg field
 <p><br></p>
 <p>
 
-![](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/b8a51b0c6912dfe023921f62bf6a23f7.png)
+![REX 확장이 표시된 SIB 인코딩 표](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/b8a51b0c6912dfe023921f62bf6a23f7.png)
 
 </p>
 <p>이 표에서 보면 오른쪽 위에 REX.B = 1이 보일 것이다.</p>
@@ -147,7 +147,7 @@ mov r8, [r8+r8]
 <p>이러면 모든 REX에 대해 비트가 켜져있어야 함으로, 우리가 예상한 그대로의 결과를 보여준다.</p>
 <p>
 
-![](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/12d38a025c28376ac1539fc97c96c683.png)
+![W R X B 비트가 모두 설정된 REX 명령어](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/12d38a025c28376ac1539fc97c96c683.png)
 
 </p>
 <p><br></p>

@@ -235,14 +235,18 @@ function setupSpoilers() {
       spoiler.classList.add('spoiler-image');
     }
 
-    spoiler.addEventListener('click', () => {
-      spoiler.classList.toggle('revealed');
-    });
+    const toggleSpoiler = () => {
+      const revealed = spoiler.classList.toggle('revealed');
+      spoiler.setAttribute('aria-expanded', String(revealed));
+      spoiler.setAttribute('aria-label', revealed ? '스포일러 숨기기' : '스포일러 보기');
+    };
+
+    spoiler.addEventListener('click', toggleSpoiler);
 
     spoiler.addEventListener('keydown', (event) => {
       if (event.key !== 'Enter' && event.key !== ' ') return;
       event.preventDefault();
-      spoiler.classList.toggle('revealed');
+      toggleSpoiler();
     });
   }
 }

@@ -33,12 +33,12 @@ async function main(): Promise<void> {
   }
 
   const today = new Date();
-  const date = `${today.getUTCFullYear()}-${String(today.getUTCMonth() + 1).padStart(2, "0")}-${String(
-    today.getUTCDate()
+  const date = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(
+    today.getDate()
   ).padStart(2, "0")}`;
 
   const content = `---
-title: "${titleInput.replaceAll('"', '\\"')}"
+title: ${JSON.stringify(titleInput)}
 slug: "${slug}"
 date: "${date}"
 excerpt: "한 줄 요약을 작성하세요."
@@ -54,11 +54,16 @@ tags:
   const postsDir = path.join(process.cwd(), "content", "posts");
   await mkdir(postsDir, { recursive: true });
   const filePath = path.join(postsDir, `${slug}.md`);
-  await writeFile(filePath, content, "utf8");
+  await writeFile(filePath, content, { encoding: "utf8", flag: "wx" });
   console.log(`Created ${filePath}`);
 }
 
 main().catch((error) => {
+  if ((error as NodeJS.ErrnoException).code === "EEXIST") {
+    console.error("A post with that slug already exists. Choose a different --slug.");
+    process.exitCode = 1;
+    return;
+  }
   console.error(error);
   process.exitCode = 1;
 });

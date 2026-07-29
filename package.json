@@ -3,23 +3,28 @@
   "version": "1.0.0",
   "type": "module",
   "private": true,
+  "engines": {
+    "node": ">=22 <23"
+  },
   "scripts": {
-    "prepare:site": "node -e \"require('fs').mkdirSync('site/assets', { recursive: true })\"",
     "build:scripts": "tsgo -p tsconfig.json",
     "build:site": "npm run build:scripts && node build-scripts/build.js",
     "build:css": "tailwindcss -c tailwind.config.cjs -i ./src/styles.css -o ./site/assets/styles.css --minify",
-    "build": "npm run prepare:site && npm run build:site && npm run build:css",
+    "build": "npm run build:site && npm run build:css",
+    "typecheck": "tsgo -p tsconfig.json --noEmit",
+    "check:scripts": "node --check src/post-client.js",
+    "test": "npm run build:scripts && node --test",
+    "check": "npm run typecheck && npm run check:scripts && npm test",
     "new:post": "npm run build:scripts && node build-scripts/new-post.js",
-    "import:tistory": "node scripts/import_tistory.mjs",
-    "normalize:posts": "node scripts/normalize_imported_posts.mjs",
-    "migrate:images": "node scripts/migrate_images_to_jsdelivr.mjs ../devlog-assets"
+    "validate": "npm run check && npm run build"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.19",
+    "@types/sanitize-html": "^2.16.1",
     "@types/node": "^22.15.14",
     "@typescript/native-preview": "^7.0.0-dev.20260330.1",
     "autoprefixer": "^10.4.21",
-    "postcss": "^8.5.6",
+    "postcss": "^8.5.23",
     "tailwindcss": "^3.4.18"
   },
   "dependencies": {
@@ -27,6 +32,10 @@
     "gray-matter": "^4.0.3",
     "highlight.js": "^11.11.1",
     "marked": "^15.0.12",
-    "marked-highlight": "^2.2.2"
+    "marked-highlight": "^2.2.2",
+    "sanitize-html": "^2.17.6"
+  },
+  "overrides": {
+    "js-yaml": "^3.15.0"
   }
 }

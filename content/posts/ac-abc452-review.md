@@ -80,4 +80,4 @@ $\sum\limits_{j=1}^{M} A_k B_i (k \mod j) = \alpha + A_k\sum\limits_{j=i+1}^{M} 
 
 레이팅 변동 : 240 → 395 (+155)
 
-![](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/ac-abc452-review-image2.png)
+![ABC 452 참가 후 레이팅 변동](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/ac-abc452-review-image2.png)

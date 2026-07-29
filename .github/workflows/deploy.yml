@@ -2,7 +2,9 @@ name: Deploy Blog
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "master"]
+  pull_request:
+    branches: ["main", "master"]
   workflow_dispatch:
 
 permissions:
@@ -30,6 +32,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Run checks
+        run: npm run check
+
       - name: Build static site
         env:
           GISCUS_ENABLED: ${{ secrets.GISCUS_ENABLED }}
@@ -40,21 +45,24 @@ jobs:
           GISCUS_MAPPING: ${{ secrets.GISCUS_MAPPING }}
           GISCUS_STRICT: ${{ secrets.GISCUS_STRICT }}
           GISCUS_THEME: ${{ secrets.GISCUS_THEME }}
-          SITE_URL: ${{ secrets.SITE_URL }}
+          SITE_URL: ${{ secrets.SITE_URL || 'https://qluana7.github.io/devlog' }}
           ENGAGEMENT_ENABLED: ${{ secrets.ENGAGEMENT_ENABLED }}
           ENGAGEMENT_SUPABASE_URL: ${{ secrets.ENGAGEMENT_SUPABASE_URL }}
           ENGAGEMENT_SUPABASE_ANON_KEY: ${{ secrets.ENGAGEMENT_SUPABASE_ANON_KEY }}
         run: npm run build
 
       - name: Setup Pages
+        if: github.event_name != 'pull_request'
         uses: actions/configure-pages@v5
 
       - name: Upload artifact
+        if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./site
 
   deploy:
+    if: github.event_name != 'pull_request'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

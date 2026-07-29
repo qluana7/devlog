@@ -22,7 +22,7 @@ mov eax, [arr+edx*3]
 <p><br></p>
 <p><i>엥? 뭐가 문제인데요?</i></p>
 <p><br></p>
-<p><a href="https://thinkcs.tistory.com/entry/about-assembly-and-binary" target="_blank" rel="noopener">이전 글</a>을 참고해 보자.</p>
+<p><a href="about-assembly-and-binary.html">이전 글</a>을 참고해 보자.</p>
 <blockquote>Scale의 경우에는 보이다 싶이 1, 2, 4, 8만 사용될 수 있다.</blockquote>
 <p><br></p>
 <p>그렇다. Instruction 상에는 저런 SIB가 존재할 수 없다는 얘기다.</p>
@@ -31,7 +31,7 @@ mov eax, [arr+edx*3]
 <p>gdb로 빌드된 파일을 역어셈 해보았더니</p>
 <p>
 
-![](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/5b7f64954f44da9dfc0511f85d3eb7a1.png)
+![32비트 ModR/M과 SIB 인코딩 표](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/5b7f64954f44da9dfc0511f85d3eb7a1.png)
 
 </p>
 <p><br></p>

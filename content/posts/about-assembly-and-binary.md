@@ -20,7 +20,7 @@ tags:
 <p><br>Instruction의 구조는 간단하면서도 생각외로 복잡하다. 다음 표를 보자</p>
 <p>
 
-![](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/07de142efb727503af403cd5ae330735.png)
+![x86 명령어의 바이트 구성](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/07de142efb727503af403cd5ae330735.png)
 
 </p>
 <p>Instruction 하나에 많은 것들이 들어가는데 앞에서부터 천천히 살펴보자<br><br></p>
@@ -37,7 +37,7 @@ tags:
 <p>(더 자세한 건 위에 있는 opcode 목록에서 최 하단을 보면 32/64비트 용으로 통합되어 있다)</p>
 <p>
 
-![](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/88740d680e9aeac4d4a871441a3bf6fd.png)
+![ModR/M 바이트 인코딩 표](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/88740d680e9aeac4d4a871441a3bf6fd.png)
 
 </p>
 <p>저 표에 따라서 ModR/M의 값이 정해지게 되는데, 이녀석이 하는 일은 단순하다.</p>
@@ -61,7 +61,7 @@ tags:
 <p>(ModR/M과 마찬가지로 해당 사이트에서 ModR/M표에서 더 내리면 SIB표가 존재한다)</p>
 <p>
 
-![](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/bd836f9294fb7e5a6c0d7c34cd15b419.png)
+![SIB 바이트 인코딩 표](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/bd836f9294fb7e5a6c0d7c34cd15b419.png)
 
 </p>
 <p>참고로 Scale의 경우에는 보이다 싶이 1, 2, 4, 8만 사용될 수 있다.</p>
@@ -106,7 +106,7 @@ mov eax, [ebp+8]
 <p>따라서 저 Instruction은 0x8B 0x45 0x08 와 같이 번역될 것이다.</p>
 <p>
 
-![](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/75f4565890c36683fb76d17eb5bc1a9c.png)
+![mov 명령어를 디스어셈블한 결과](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/75f4565890c36683fb76d17eb5bc1a9c.png)
 
 </p>
 <p><br></p>
@@ -126,7 +126,7 @@ xor rax, [rbp+rcx*4+0x8]
 <p>따라서 저 Instruction은 0x48 0x33 0x44 0x8D 0x08와 같이 번역될 것이다.</p>
 <p>
 
-![](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/8ee157b917811d86987906546bdaba6c.png)
+![SIB를 사용하는 xor 명령어의 디스어셈블 결과](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/8ee157b917811d86987906546bdaba6c.png)
 
 </p>
 <p><br></p>

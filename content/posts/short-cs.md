@@ -56,7 +56,7 @@ Console.WriteLine(a+b);
 <p>위 코드의 문제점은 a와 b를 새로 할당해서 변환하는 작업을 거친다는 것이다. 이를 간략하게 줄여줄 메서드가 있는데, 바로 Array.ConvertAll이라는 함수이다. 내용에 대해서는 아래 링크를 참조하자.</p>
 <p><br></p>
 
-<div class="embed-card"><a class="embed-card-link" href="https://docs.microsoft.com/ko-kr/dotnet/api/system.array.convertall" target="_blank" rel="noreferrer noopener"><div class="embed-card-media"><img src="https://blog.kakaocdn.net/dna/bFUMRM/hyLBBfcTuS/AAAAAAAAAAAAAAAAAAAAAAkRfMrqq7G845iosKxFI0gUtvSadOoQ1S_uxLuYAFGe/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1774969199&allow_ip=&allow_referer=&signature=p92%2FWnKZnnKwwfMjEkauEnkMRjk%3D" alt="Array.ConvertAll<TInput,TOutput>(TInput[], Converter<TInput,TOutput>) 메서드 (System)" loading="lazy" /></div><div class="embed-card-body"><p class="embed-card-title">Array.ConvertAll<TInput,TOutput>(TInput[], Converter<TInput,TOutput>) 메서드 (System)</p><p class="embed-card-desc">한 형식의 배열을 다른 형식의 배열로 변환합니다.Converts an array of one type to an array of another type.</p><p class="embed-card-host">docs.microsoft.com</p></div></a></div>
+<div class="embed-card"><a class="embed-card-link embed-card-no-media" href="https://learn.microsoft.com/ko-kr/dotnet/api/system.array.convertall" target="_blank" rel="noreferrer noopener"><div class="embed-card-body"><p class="embed-card-title">Array.ConvertAll&lt;TInput,TOutput&gt; 메서드</p><p class="embed-card-desc">한 형식의 배열을 다른 형식의 배열로 변환하는 .NET 공식 문서입니다.</p><p class="embed-card-host">learn.microsoft.com</p></div></a></div>
 
 <p><br></p>
 <p>함수를 이용해 a와 b를 사용하지 않고 배열만을 이용해보자. 또한 WriteLine이 아닌 Write함수로 대체할 수 있다.</p>
@@ -108,7 +108,7 @@ using static System.Console;Write(Read()-3*Read()+Read());
 <p><br></p>
 <p>for문은 특이한 성질을 가지고 있다. C에서 숏코딩을 해봤다면 알법한 내용이다. 혹시나 궁금하다면 아래 주소로 들어가서 내용을 봐보자</p>
 
-<div class="embed-card"><a class="embed-card-link" href="https://thinkcs.tistory.com/entry/about-for" target="_blank" rel="noreferrer noopener"><div class="embed-card-media"><img src="https://blog.kakaocdn.net/dna/blRubG/hyLBGt6afY/AAAAAAAAAAAAAAAAAAAAABm6SeYkWC0dNQrL8zNqGhbPGlbZ4uV1flU4TtCitnAh/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1774969199&allow_ip=&allow_referer=&signature=S0soObBPkJWnYvs47JpwG7q4ooY%3D" alt="for에 관한 고찰" loading="lazy" /></div><div class="embed-card-body"><p class="embed-card-title">for에 관한 고찰</p><p class="embed-card-desc">C#에서 자주 보이는 구문이 하나 있다. 바로 "for". ​ for은 반복을 해주는 반복문으로써 꽤 자주 쓰이게 되는데, 최근에 발견한 for에 관한 이야기이다. ​ 우리가 잘 알고 있듯이 for문은 다음과 같</p><p class="embed-card-host">thinkcs.tistory.com</p></div></a></div>
+<div class="embed-card"><a class="embed-card-link embed-card-no-media" href="about-for.html"><div class="embed-card-body"><p class="embed-card-title">for에 관한 고찰</p><p class="embed-card-desc">C#의 for 문과 반복 과정에서 발견한 동작을 정리한 글입니다.</p><p class="embed-card-host">Devlog</p></div></a></div>
 
 <p>위 내용처럼, for문 트릭을 이용함으로써 선언자 생략, 조건문 변형등이 가능하다.</p>
 <hr contenteditable="false" />

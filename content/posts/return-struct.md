@@ -13,7 +13,7 @@ tags:
   - "struct반환"
 ---
 
-<div class="embed-card"><a class="embed-card-link" href="https://thinkcs.tistory.com/entry/function-return" target="_blank" rel="noreferrer noopener"><div class="embed-card-media"><img src="https://blog.kakaocdn.net/dna/K5zzu/hySaYWNvhu/AAAAAAAAAAAAAAAAAAAAALw8P2JoVkau-3I99oeeBp-JFDMbWUVA5HjAqQT2FMzO/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1774969199&allow_ip=&allow_referer=&signature=MRhJ95bY8WlOsWXyJ56%2BtyHwDGw%3D" alt="함수의 반환에 대한 고찰" loading="lazy" /></div><div class="embed-card-body"><p class="embed-card-title">함수의 반환에 대한 고찰</p><p class="embed-card-desc">오늘은 함수 반환에 대해 간단하게 알아보고자 한다. * 컴파일 옵션은 다음과 같다 gcc -o Main Main.c -O0 보통 함수에서 값을 반환하게 되면, eax(32bits), rax(64bits) 레지스터를 사용하게 된다. 그리하여</p><p class="embed-card-host">thinkcs.tistory.com</p></div></a></div>
+<div class="embed-card"><a class="embed-card-link embed-card-no-media" href="function-return.html"><div class="embed-card-body"><p class="embed-card-title">함수의 반환에 대한 고찰</p><p class="embed-card-desc">함수가 값을 반환할 때 사용하는 레지스터와 호출 규약을 살펴본 글입니다.</p><p class="embed-card-host">Devlog</p></div></a></div>
 
 <p>예전이 이런 포스팅을 한적이 있었다.</p>
 <p><br></p>

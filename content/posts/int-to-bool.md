@@ -29,7 +29,7 @@ int main() {
 <p><br></p>
 <p>
 
-![](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/2ff1be078e9a8505d6ada1a2df9f1ee3.png)
+![int 값을 bool로 변환하는 코드의 디스어셈블 결과](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/2ff1be078e9a8505d6ada1a2df9f1ee3.png)
 
 </p>
 <p>설명</p>
@@ -37,13 +37,13 @@ int main() {
 <p><br></p>
 <p>
 
-![](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/a40af54d323697e110670aa7b2713dce.png)
+![n이 0이 아닐 때 cmp 명령 실행 결과](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/a40af54d323697e110670aa7b2713dce.png)
 
 </p>
 <p>따라서 n이 0이 아니기 때문에 Zero flag에 의해서</p>
 <p>
 
-![](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/7a1993cd4b64db010e90243076f3f572.png)
+![Zero Flag가 거짓일 때 sete 명령 실행 결과](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/7a1993cd4b64db010e90243076f3f572.png)
 
 </p>
 <p>sete는 0을 반환한다</p>
@@ -52,13 +52,13 @@ int main() {
 <p><br></p>
 <p>
 
-![](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/5359003f39d23b22ca1df701f95794de.png)
+![n이 0일 때 cmp 명령 실행 결과](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/5359003f39d23b22ca1df701f95794de.png)
 
 </p>
 <p>이렇게 n = 0인 상황에서는 cmp가 Zero를 true 설정하기 때문에</p>
 <p>
 
-![](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/6c5fac072f7aa5513822266a1bc1f1ce.png)
+![Zero Flag가 참일 때 sete 명령 실행 결과](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/6c5fac072f7aa5513822266a1bc1f1ce.png)
 
 </p>
 <p>값이 달라진다.</p>

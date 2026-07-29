@@ -64,7 +64,7 @@ F랑 G도 조금씩 보긴 했으나… F는 문제가 참.. 어려워서 손도
 그래도 나름 첫 앳코를 쳤고 최종 레이팅 변화 0 → 75가 되었네요.
 
 퍼포먼스도 932점이네요
-![](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/ac-abc450-review-image1.png)
+![ABC 450 참가 후 레이팅 변동](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/ac-abc450-review-image1.png)
 
 <p><br/></p>
 <p><br/></p>

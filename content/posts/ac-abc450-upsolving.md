@@ -19,7 +19,7 @@ tags:
 
 여전히.. 풀이는 떠오르지 않았고 에디토리얼에서 힌트를 얻고자 보았는데.. (태그만 볼려고 했다)
 
-![](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/ac-abc450-upsolving-image1.png)
+![ABC 450 업솔빙 중 확인한 문제 태그](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/ac-abc450-upsolving-image1.png)
 
 <p><br/></p>
 
@@ -59,7 +59,7 @@ tags:
 
 에디토리얼에선 다음과 같이 규정하고 있는데
 
-![](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/ac-abc450-upsolving-image2.png)
+![문자열 점화식에 대한 에디토리얼 설명](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/ac-abc450-upsolving-image2.png)
 
 사실 간단하게 풀어 쓰자면, F(n) = F(n - 1) + F(n - 2) 꼴이므로, 찾으려는 위치가 |F(n - 1)| 보다 크냐 작냐에 따라서 F(n - 1)을 탐색할지 F(n - 2)를 탐색할지를 나눠서 들어가는 식으로 구현이 된다.
 

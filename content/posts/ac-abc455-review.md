@@ -105,4 +105,4 @@ F는 문제는 이해가 됐지만, 어떻게 최적화 해야할지 감이 안�
 
 레이팅 변동 : 519 → 653 (+134)
 
-![](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/ac-abc455-review-image3.png)
+![ABC 455 참가 후 레이팅 변동](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/ac-abc455-review-image3.png)

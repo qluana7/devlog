@@ -17,13 +17,13 @@ tags:
 <p>리눅스 x 윈도우 듀얼 부팅 후 리눅스에 쓸 배경이 필요해서 직접 파워포인트로 제작해보았다.</p>
 <p>
 
-![](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/165b04537c20b71edece3fb54d3be08b.png)
+![직접 만든 첫 번째 배경화면](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/165b04537c20b71edece3fb54d3be08b.png)
 
 </p>
 <p>착용샷</p>
 <p>
 
-![](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/2eadab28970842557246560d5e012f13.png)
+![직접 만든 두 번째 배경화면](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/2eadab28970842557246560d5e012f13.png)
 
 </p>
 <p><br></p>

@@ -9,6 +9,7 @@
 - 코드 블록 syntax highlight
 - 코드 블록 Copy 버튼(아이콘)
 - 본문 하단 Previous/Next 이동
+- RSS, sitemap, robots.txt 자동 생성
 
 검색 팁:
 
@@ -132,7 +133,8 @@ alter table post_views add constraint post_views_slug_visitor_hash_viewed_on_key
 ## 로컬 실행
 
 ```bash
-npm install
+npm ci
+npm run check
 npm run build
 ```
 
@@ -141,6 +143,12 @@ npm run build
 - 메인: `site/index.html`
 - 포스트: `site/posts/*.html`
 - 태그: `site/tags/*.html`
+- 검색 데이터: `site/posts.json`
+- RSS: `site/rss.xml`
+- sitemap: `site/sitemap.xml`
+
+`npm run check`는 타입 검사, 브라우저 스크립트 구문 검사, 단위 테스트를 순서대로 실행합니다.
+포스트의 slug, 날짜, 태그와 출력 경로도 빌드 중 검증됩니다.
 
 ## 새 포스트 작성
 
@@ -174,5 +182,6 @@ tags:
 
 ## 배포
 
-- `.github/workflows/deploy.yml` 이 `main` 브랜치 push 때 빌드 후 Pages로 배포합니다.
+- `.github/workflows/deploy.yml` 이 `main` 또는 `master` 브랜치 push 때 검사·빌드 후 Pages로 배포합니다.
+- 두 브랜치를 대상으로 한 Pull Request에서도 동일한 검사와 빌드를 실행하되 배포는 하지 않습니다.
 - GitHub 저장소 설정에서 **Pages -> Build and deployment -> GitHub Actions** 를 선택하세요.

@@ -86,4 +86,4 @@ E번은 사실 보기만 했는데, 그래프 탐색으로 하기에는 시간�
 
 - Brown 달성!
 
-![](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/ac-abc454-review-image1.png)
+![ABC 454 참가 후 브라운 레이팅 달성](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/ac-abc454-review-image1.png)

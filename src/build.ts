@@ -1,47 +1,41 @@
-import { copyFile, mkdir, readdir, readFile, rm, stat, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { config as loadEnv } from "dotenv";
 import matter from "gray-matter";
-import { Marked } from "marked";
-import { markedHighlight } from "marked-highlight";
-import hljs from "highlight.js";
+import { containsMath, renderMarkdown, sanitizeForSearch } from "./markdown.js";
+import { tagPathSegment } from "./client-utils.js";
+import type { Post } from "./post-model.js";
+import { assertUniqueSlugs, parsePostMeta, resolveWithin } from "./post-validation.js";
+import { escapeHtml, escapeXml, formatDate, toAbsoluteUrl } from "./render-utils.js";
 
 loadEnv();
-
-type PostMeta = {
-  title: string;
-  slug: string;
-  date: string;
-  excerpt: string;
-  tags: string[];
-};
-
-type Post = PostMeta & {
-  html: string;
-  content: string;
-};
 
 const ROOT = process.cwd();
 const CONTENT_DIR = path.join(ROOT, "content", "posts");
 const SITE_DIR = path.join(ROOT, "site");
 const POSTS_OUT_DIR = path.join(SITE_DIR, "posts");
 const TAGS_OUT_DIR = path.join(SITE_DIR, "tags");
-const UPLOADS_OUT_DIR = path.join(SITE_DIR, "assets", "uploads");
+const ASSETS_OUT_DIR = path.join(SITE_DIR, "assets");
+const UPLOADS_OUT_DIR = path.join(ASSETS_OUT_DIR, "uploads");
+const CLIENT_BUILD_DIR = path.join(ROOT, "build-scripts");
 const POSTS_PER_PAGE = 8;
-const SITE_URL = (process.env.SITE_URL ?? "").replace(/\/$/, "");
+const SITE_URL = (process.env.SITE_URL || "https://qluana7.github.io/devlog").replace(/\/$/, "");
 
 type LayoutMeta = {
   description: string;
   path: string;
   type: "website" | "article";
+  includeMath?: boolean;
+  includePagination?: boolean;
+  includePostScript?: boolean;
 };
 
 const GISCUS_CONFIG = {
-  enabled: (process.env.GISCUS_ENABLED ?? "true") === "true",
-  repo: process.env.GISCUS_REPO ?? "qluana7/devlog",
-  repoId: process.env.GISCUS_REPO_ID ?? "R_kgDOR1RBKw",
-  category: process.env.GISCUS_CATEGORY ?? "Comment",
-  categoryId: process.env.GISCUS_CATEGORY_ID ?? "DIC_kwDOR1RBK84C5qRC",
+  enabled: process.env.GISCUS_ENABLED === "true",
+  repo: process.env.GISCUS_REPO ?? "",
+  repoId: process.env.GISCUS_REPO_ID ?? "",
+  category: process.env.GISCUS_CATEGORY ?? "",
+  categoryId: process.env.GISCUS_CATEGORY_ID ?? "",
   mapping: process.env.GISCUS_MAPPING ?? "pathname",
   strict: process.env.GISCUS_STRICT ?? "0",
   theme: process.env.GISCUS_THEME ?? "dark_dimmed"
@@ -53,202 +47,11 @@ const ENGAGEMENT_CONFIG = {
   supabaseAnonKey: process.env.ENGAGEMENT_SUPABASE_ANON_KEY ?? ""
 };
 
-const marked = new Marked(
-  markedHighlight({
-    langPrefix: "hljs language-",
-    highlight(code, lang) {
-      if (lang && hljs.getLanguage(lang)) {
-        return hljs.highlight(code, { language: lang }).value;
-      }
-      return hljs.highlightAuto(code).value;
-    }
-  })
-);
-
-function assertString(value: unknown, name: string): string {
-  if (typeof value !== "string" || !value.trim()) {
-    throw new Error(`Invalid frontmatter: '${name}' must be a non-empty string.`);
-  }
-  return value.trim();
-}
-
-function normalizeTags(value: unknown): string[] {
-  if (!Array.isArray(value)) {
-    return [];
-  }
-  return value.map((item) => String(item).trim()).filter(Boolean);
-}
-
-function formatDate(isoDate: string): string {
-  const date = new Date(`${isoDate}T00:00:00Z`);
-  if (Number.isNaN(date.getTime())) {
-    return isoDate;
-  }
-  const y = date.getUTCFullYear();
-  const m = String(date.getUTCMonth() + 1).padStart(2, "0");
-  const d = String(date.getUTCDate()).padStart(2, "0");
-  return `${y}.${m}.${d}`;
-}
-
-function sanitizeForSearch(markdown: string): string {
-  return markdown
-    .replace(/```[\s\S]*?```/g, " ")
-    .replace(/`[^`]*`/g, " ")
-    .replace(/!\[[^\]]*\]\([^)]*\)/g, " ")
-    .replace(/\[[^\]]*\]\([^)]*\)/g, " ")
-    .replace(/[#>*_~\-]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function isExternalAsset(target: string): boolean {
-  return /^(https?:\/\/|data:|mailto:|#|\/)/i.test(target);
-}
-
-function splitMarkdownDestination(raw: string): { target: string; trailing: string } {
-  const trimmed = raw.trim();
-  const match = trimmed.match(/^(\S+)(\s+["'][\s\S]*["'])$/);
-  if (match) {
-    return { target: match[1], trailing: match[2] };
-  }
-  return { target: trimmed, trailing: "" };
-}
-
-async function rewriteMarkdownImages(markdown: string, slug: string, sourceDir: string): Promise<string> {
-  const pattern = /!\[([^\]]*)\]\(([^)]+)\)/g;
-  const copied = new Map<string, string>();
-  let rebuilt = "";
-  let lastIndex = 0;
-  let assetIndex = 0;
-
-  for (const match of markdown.matchAll(pattern)) {
-    const start = match.index ?? 0;
-    const fullMatch = match[0];
-    const altText = match[1];
-    const destinationRaw = match[2];
-
-    rebuilt += markdown.slice(lastIndex, start);
-
-    const { target, trailing } = splitMarkdownDestination(destinationRaw);
-    const normalizedTarget =
-      target.startsWith("<") && target.endsWith(">") ? target.slice(1, -1).trim() : target.trim();
-
-    if (!normalizedTarget || isExternalAsset(normalizedTarget)) {
-      rebuilt += fullMatch;
-      lastIndex = start + fullMatch.length;
-      continue;
-    }
-
-    const sourcePath = path.resolve(sourceDir, normalizedTarget);
-    try {
-      const sourceStat = await stat(sourcePath);
-      if (!sourceStat.isFile()) {
-        rebuilt += fullMatch;
-        lastIndex = start + fullMatch.length;
-        continue;
-      }
-
-      let publicPath = copied.get(sourcePath);
-      if (!publicPath) {
-        assetIndex += 1;
-        const ext = path.extname(sourcePath) || ".bin";
-        const fileName = `${String(assetIndex).padStart(2, "0")}${ext.toLowerCase()}`;
-        const postUploadDir = path.join(UPLOADS_OUT_DIR, slug);
-        await mkdir(postUploadDir, { recursive: true });
-        await copyFile(sourcePath, path.join(postUploadDir, fileName));
-        publicPath = `../assets/uploads/${encodeURIComponent(slug)}/${encodeURIComponent(fileName)}`;
-        copied.set(sourcePath, publicPath);
-      }
-
-      rebuilt += `![${altText}](${publicPath}${trailing})`;
-    } catch {
-      rebuilt += fullMatch;
-    }
-
-    lastIndex = start + fullMatch.length;
-  }
-
-  rebuilt += markdown.slice(lastIndex);
-  return rebuilt;
-}
-
-function escapeHtml(value: string): string {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
-}
-
-function toAbsoluteUrl(pathOrUrl: string): string {
-  if (/^https?:\/\//i.test(pathOrUrl)) {
-    return pathOrUrl;
-  }
-  if (!SITE_URL) {
-    return "";
-  }
-  const normalized = pathOrUrl.startsWith("/") ? pathOrUrl : `/${pathOrUrl}`;
-  return `${SITE_URL}${normalized}`;
-}
-
-function applyImageCaptions(html: string): string {
-  return html.replace(
-    /<img([^>]*?)alt="([^"]+)"([^>]*)>/g,
-    (match, before, alt, after) => {
-      const trimmed = alt.trim();
-      if (!trimmed) {
-        return match;
-      }
-      return `<figure class="post-image">${match}<figcaption>${escapeHtml(trimmed)}</figcaption></figure>`;
-    }
-  );
-}
-
-function applySpoilers(html: string): string {
-  const protectedBlocks: string[] = [];
-  const protect = (input: string): string => {
-    return input.replace(/<(pre|code)[\s\S]*?<\/\1>/gi, (block) => {
-      const token = `@@PROTECTED_${protectedBlocks.length}@@`;
-      protectedBlocks.push(block);
-      return token;
-    });
-  };
-
-  const restore = (input: string): string => {
-    let out = input;
-    for (let i = 0; i < protectedBlocks.length; i += 1) {
-      out = out.replace(`@@PROTECTED_${i}@@`, protectedBlocks[i]);
-    }
-    return out;
-  };
-
-  const containsBlockTag = (value: string): boolean => {
-    return /<(p|div|figure|section|article|ul|ol|li|table|blockquote|h[1-6]|hr|pre|img)\b/i.test(value);
-  };
-
-  const masked = protect(html);
-  const transformed = masked.replace(/\|\|([\s\S]*?)\|\|/g, (_m, innerRaw) => {
-    const inner = innerRaw.trim();
-    if (!inner) {
-      return _m;
-    }
-
-    if (containsBlockTag(inner)) {
-      return `<div class="spoiler spoiler-block" tabindex="0" role="button" aria-label="Spoiler"><div class="spoiler-content">${inner}</div></div>`;
-    }
-
-    return `<span class="spoiler" tabindex="0" role="button" aria-label="Spoiler"><span class="spoiler-content">${inner}</span></span>`;
-  });
-
-  return restore(transformed);
-}
-
 function renderTagPillsWithPrefix(tags: string[], rootPrefix: string): string {
   return tags
     .map(
       (tag) =>
-        `<a class="px-2 py-0.5 rounded bg-accent/10 text-accent text-xs hover:bg-accent/20" href="${rootPrefix}/tags/${encodeURIComponent(tag)}.html">${escapeHtml(tag)}</a>`
+        `<a class="px-2 py-0.5 rounded bg-accent/10 text-accent text-xs hover:bg-accent/20" href="${rootPrefix}/tags/${tagPathSegment(tag)}.html">${escapeHtml(tag)}</a>`
     )
     .join("");
 }
@@ -295,8 +98,29 @@ function renderLayout(title: string, body: string, rootPrefix: string, meta: Lay
     ENGAGEMENT_CONFIG.supabaseAnonKey
   )}};</script>`;
 
-  const absolutePageUrl = toAbsoluteUrl(meta.path);
+  const absolutePageUrl = toAbsoluteUrl(SITE_URL, meta.path);
   const canonicalLink = absolutePageUrl ? `<link rel="canonical" href="${escapeHtml(absolutePageUrl)}">` : "";
+  const mathScripts = meta.includeMath
+    ? `<script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$']],
+        displayMath: [['$$', '$$']],
+        processEscapes: true
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>`
+    : "";
+  const paginationScript = meta.includePagination
+    ? `<script type="module" src="${rootPrefix}/assets/pagination.js"></script>`
+    : "";
+  const postScript = meta.includePostScript
+    ? `<script defer src="${rootPrefix}/assets/post.js"></script>`
+    : "";
 
   return `<!doctype html>
 <html lang="ko" class="">
@@ -314,25 +138,16 @@ function renderLayout(title: string, body: string, rootPrefix: string, meta: Lay
   <meta name="twitter:title" content="${escapeHtml(title)}">
   <meta name="twitter:description" content="${escapeHtml(meta.description)}">
   ${canonicalLink}
+  <link rel="alternate" type="application/rss+xml" title="Devlog RSS" href="${rootPrefix}/rss.xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="${rootPrefix}/assets/styles.css">
-  <script>
-    window.MathJax = {
-      tex: {
-        inlineMath: [['$', '$']],
-        displayMath: [['$$', '$$']],
-        processEscapes: true
-      },
-      options: {
-        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-      }
-    };
-  </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+  ${mathScripts}
   ${engagementConfigScript}
-  <script defer src="${rootPrefix}/assets/search.js"></script>
-  <script defer src="${rootPrefix}/assets/pagination.js"></script>
-  <script defer src="${rootPrefix}/assets/post.js"></script>
+  <script type="module" src="${rootPrefix}/assets/search.js"></script>
+  ${paginationScript}
+  ${postScript}
 </head>
 <body class="antialiased bg-bg text-text font-inter">
   <header class="sticky top-0 border-b border-border/40 bg-header/80 backdrop-blur-md z-10">
@@ -467,7 +282,7 @@ function renderTagCloud(
       const className = isActive
         ? "px-2 py-0.5 rounded bg-accent text-header text-xs inline-flex items-center gap-2"
         : "px-2 py-0.5 rounded bg-accent/10 text-accent text-xs inline-flex items-center gap-2 hover:bg-accent/20";
-      return `<a class="${className}" href="${rootPrefix}/tags/${encodeURIComponent(tag)}.html">${escapeHtml(tag)} <span class="text-[11px] ${
+      return `<a class="${className}" href="${rootPrefix}/tags/${tagPathSegment(tag)}.html">${escapeHtml(tag)} <span class="text-[11px] ${
         isActive ? "text-header/80" : "text-subtle"
       }">(${count})</span></a>`;
     })
@@ -525,7 +340,7 @@ function renderIndexBody(posts: Post[]): string {
 function renderTagPageBody(tag: string, posts: Post[], allTags: [string, number][]): string {
   const cards = renderPostCards(posts, "..");
   const tags = renderTagCloud(allTags, "..", tag);
-  const tagBase = `tag:${encodeURIComponent(tag)}`;
+  const tagBase = `tag:${tagPathSegment(tag)}`;
   return `<main class="max-w-[88rem] mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-4 gap-8">
     ${renderProfileCard()}
     <section class="lg:col-span-2 order-1 lg:order-2 lg:-ml-3 lg:pr-8 xl:pr-12">
@@ -555,26 +370,25 @@ async function readPosts(): Promise<Post[]> {
   for (const filePath of markdownFiles) {
     const raw = await readFile(filePath, "utf8");
     const parsed = matter(raw);
-    const title = assertString(parsed.data.title, "title");
-    const slug = assertString(parsed.data.slug, "slug");
-    const date = assertString(parsed.data.date, "date");
-    const excerpt = assertString(parsed.data.excerpt, "excerpt");
-    const tags = normalizeTags(parsed.data.tags);
-    const markdownWithAssets = await rewriteMarkdownImages(parsed.content, slug, path.dirname(filePath));
-    const html = applySpoilers(applyImageCaptions(await marked.parse(markdownWithAssets)));
+    const sourceName = path.relative(ROOT, filePath);
+    const metadata = parsePostMeta(parsed.data as Record<string, unknown>, sourceName);
+    const html = await renderMarkdown(parsed.content, {
+      slug: metadata.slug,
+      sourceDir: path.dirname(filePath),
+      contentDir: CONTENT_DIR,
+      uploadsOutDir: UPLOADS_OUT_DIR
+    });
     const content = sanitizeForSearch(parsed.content);
 
     posts.push({
-      title,
-      slug,
-      date,
-      excerpt,
-      tags,
+      ...metadata,
       html,
-      content
+      content,
+      hasMath: containsMath(parsed.content)
     });
   }
 
+  assertUniqueSlugs(posts);
   posts.sort((a, b) => b.date.localeCompare(a.date));
   return posts;
 }
@@ -590,9 +404,11 @@ async function writePostPages(posts: Post[]): Promise<void> {
       const html = renderLayout(post.title, renderPostBody(post, previousPost, nextPost), "..", {
         description: post.excerpt,
         path: pagePath,
-        type: "article"
+        type: "article",
+        includeMath: post.hasMath,
+        includePostScript: true
       });
-      const filePath = path.join(POSTS_OUT_DIR, `${post.slug}.html`);
+      const filePath = resolveWithin(POSTS_OUT_DIR, `${post.slug}.html`);
       return writeFile(filePath, html, "utf8");
     })
   );
@@ -623,10 +439,11 @@ async function writeTagPages(posts: Post[]): Promise<void> {
       const taggedPosts = posts.filter((post) => post.tags.includes(tag));
       const html = renderLayout(`#${tag} posts`, renderTagPageBody(tag, taggedPosts, sortedTags), "..", {
         description: `#${tag} 태그로 분류된 개발 글 모음`,
-        path: `/tags/${encodeURIComponent(tag)}.html`,
-        type: "website"
+        path: `/tags/${tagPathSegment(tag)}.html`,
+        type: "website",
+        includePagination: true
       });
-      const filePath = path.join(TAGS_OUT_DIR, `${encodeURIComponent(tag)}.html`);
+      const filePath = resolveWithin(TAGS_OUT_DIR, `${tagPathSegment(tag)}.html`);
       await writeFile(filePath, html, "utf8");
     })
   );
@@ -636,12 +453,13 @@ async function writeIndexPage(posts: Post[]): Promise<void> {
   const html = renderLayout("Devlog", renderIndexBody(posts), ".", {
     description: "C++, TypeScript, Assembly 중심의 개발 기록과 삽질 노트",
     path: "/index.html",
-    type: "website"
+    type: "website",
+    includePagination: true
   });
-  await writeFile(path.join(SITE_DIR, "index.html"), html, "utf8");
+  await writeFile(resolveWithin(SITE_DIR, "index.html"), html, "utf8");
 }
 
-async function writeFeedData(posts: Post[]): Promise<void> {
+async function writeSearchData(posts: Post[]): Promise<void> {
   const metadata = posts.map((post) => ({
     title: post.title,
     slug: post.slug,
@@ -651,35 +469,103 @@ async function writeFeedData(posts: Post[]): Promise<void> {
     content: post.content
   }));
 
-  await writeFile(path.join(SITE_DIR, "posts.json"), `${JSON.stringify(metadata, null, 2)}\n`, "utf8");
+  await writeFile(resolveWithin(SITE_DIR, "posts.json"), `${JSON.stringify(metadata, null, 2)}\n`, "utf8");
 }
 
 async function writeSearchScript(): Promise<void> {
-  await copyFile(path.join(ROOT, "src", "search-client.js"), path.join(SITE_DIR, "assets", "search.js"));
+  await copyFile(
+    resolveWithin(CLIENT_BUILD_DIR, "search-client.js"),
+    resolveWithin(ASSETS_OUT_DIR, "search.js")
+  );
 }
 
 async function writePaginationScript(): Promise<void> {
-  await copyFile(path.join(ROOT, "src", "pagination-client.js"), path.join(SITE_DIR, "assets", "pagination.js"));
+  await copyFile(
+    resolveWithin(CLIENT_BUILD_DIR, "pagination-client.js"),
+    resolveWithin(ASSETS_OUT_DIR, "pagination.js")
+  );
+}
+
+async function writeClientUtilsScript(): Promise<void> {
+  await copyFile(
+    resolveWithin(CLIENT_BUILD_DIR, "client-utils.js"),
+    resolveWithin(ASSETS_OUT_DIR, "client-utils.js")
+  );
 }
 
 async function writePostScript(): Promise<void> {
-  await copyFile(path.join(ROOT, "src", "post-client.js"), path.join(SITE_DIR, "assets", "post.js"));
+  await copyFile(resolveWithin(ROOT, "src", "post-client.js"), resolveWithin(ASSETS_OUT_DIR, "post.js"));
+}
+
+async function writeSitemap(posts: Post[], tags: [string, number][]): Promise<void> {
+  const urls = [
+    toAbsoluteUrl(SITE_URL, "/index.html"),
+    ...posts.map((post) => toAbsoluteUrl(SITE_URL, `/posts/${post.slug}.html`)),
+    ...tags.map(([tag]) => toAbsoluteUrl(SITE_URL, `/tags/${tagPathSegment(tag)}.html`))
+  ];
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls.map((url) => `  <url><loc>${escapeXml(url)}</loc></url>`).join("\n")}
+</urlset>
+`;
+  await writeFile(resolveWithin(SITE_DIR, "sitemap.xml"), xml, "utf8");
+}
+
+async function writeRssFeed(posts: Post[]): Promise<void> {
+  const items = posts
+    .slice(0, 20)
+    .map((post) => {
+      const url = toAbsoluteUrl(SITE_URL, `/posts/${post.slug}.html`);
+      return `    <item>
+      <title>${escapeXml(post.title)}</title>
+      <link>${escapeXml(url)}</link>
+      <guid>${escapeXml(url)}</guid>
+      <pubDate>${new Date(`${post.date}T00:00:00Z`).toUTCString()}</pubDate>
+      <description>${escapeXml(post.excerpt)}</description>
+    </item>`;
+    })
+    .join("\n");
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Devlog</title>
+    <link>${escapeXml(toAbsoluteUrl(SITE_URL, "/index.html"))}</link>
+    <description>C++, TypeScript, Assembly 중심의 개발 기록과 삽질 노트</description>
+${items}
+  </channel>
+</rss>
+`;
+  await writeFile(resolveWithin(SITE_DIR, "rss.xml"), xml, "utf8");
+}
+
+async function writeRobotsFile(): Promise<void> {
+  const contents = `User-agent: *
+Allow: /
+Sitemap: ${toAbsoluteUrl(SITE_URL, "/sitemap.xml")}
+`;
+  await writeFile(resolveWithin(SITE_DIR, "robots.txt"), contents, "utf8");
 }
 
 async function build(): Promise<void> {
+  await mkdir(ASSETS_OUT_DIR, { recursive: true });
   await rm(POSTS_OUT_DIR, { recursive: true, force: true });
   await rm(TAGS_OUT_DIR, { recursive: true, force: true });
   await rm(path.join(SITE_DIR, "pages"), { recursive: true, force: true });
   await rm(UPLOADS_OUT_DIR, { recursive: true, force: true });
   const posts = await readPosts();
+  const tags = collectSortedTags(posts);
   await writePostPages(posts);
   await writeTagPages(posts);
   await writeIndexPage(posts);
-  await writeFeedData(posts);
+  await writeSearchData(posts);
+  await writeSitemap(posts, tags);
+  await writeRssFeed(posts);
+  await writeRobotsFile();
   await writeSearchScript();
   await writePaginationScript();
+  await writeClientUtilsScript();
   await writePostScript();
-  console.log(`Generated ${posts.length} post pages, tags, index, and search data.`);
+  console.log(`Generated ${posts.length} post pages, ${tags.length} tag pages, index, feeds, and search data.`);
 }
 
 build().catch((error) => {

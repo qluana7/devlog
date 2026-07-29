@@ -73,7 +73,7 @@ public void For(Action init, Func<bool> condition, Action increase)
 <p id="SE-703e2781-4ebf-4cb3-b11e-7a4ee997eb34">List와 같이 애초에 무거운 성능을 내는 애들을 쓸 때에는 foreach가 성능이 더 잘난다.</p>
 <p>
 
-![](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/3deddb35fee7a476a019974b7e6d63ec.png)
+![for 반복문 예제의 디스어셈블 결과](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/3deddb35fee7a476a019974b7e6d63ec.png)
 
 </p>
 <blockquote>for과 foreach에 대한 성능 실험을 조금 해보았는데 이전에 foreach에 대한 성능 저하 문제가 있다고 나온적이 있었는데 이게 개선이 되었나봐요. 인덱싱을 사용하는 작업이랑 List를 사용하는 작업 모두 성능이 같거나 foreach가 우세하게 나타나내요. 다른 Dictionary나 인덱싱 방식을 사용하지 않는 애들을 가지고 좀더 실험을 해봐야 할거 같은데 일단 foreach가 개선되서 속도가 빨라진건 맞는거 같습니다</blockquote>

@@ -3,4 +3,3 @@ build-scripts/
 site/
 .env
 tmp/
-scripts/

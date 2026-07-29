@@ -24,9 +24,9 @@ ret          ; 종료 지시문 (return)
 
 <p>C언어에서 main에서 return 0;을 사용하는 것과 같다고 보면 된다.<br><br>GCC의 경우 return 0을 안넣어도 알아서 추가해주는 똑똑한 컴파일러다.<br>그런데 여기서 의문이 생긴다.<br><br><i>"만약, main의 반환형이 int가 아니라 다른 타입이면 어떤 일이 발생할까?"</i><br><br>처음에는 int와 void의 비교를 위해서 두 코드를 역어셈 해보았다.</p>
 
-![](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/3ff9d90d127d3156335ded0e30cbbfa9.png)
+![int main 함수를 디스어셈블한 결과](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/3ff9d90d127d3156335ded0e30cbbfa9.png)
 
-![](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/9b6716fd37348c815de72ad7c75e6d0e.png)
+![void main 함수를 디스어셈블한 결과](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/9b6716fd37348c815de72ad7c75e6d0e.png)
 
 <p>두 코드의 차이점을 보자면 void에서는 eax(어셈블리에서 함수의 반환 값으로 주로 사용되는 레지스터)를 0으로 만드는 부분이 nop으로 대체되어있다<br>(nop은 간단히 말해 아무것도 실행하지 않는다는 구문이다. 이유가 궁금하다면 검색해보길 바란다)<br><br>이로써 eax의 초기화가 이루어지지 않은체 프로그램을 종료하는데<br>대부분 알다 싶이 main 함수의 반환 값은 OS에게 전달된다.<br><br><b>즉, 반환 값이 무엇인지는 아무도 알 수 없다는 것이다</b><br> <br><br>이후 추가적으로 알아보기 위하여 void 타입 외에도 다른 타입에 대해서 실험을 진행해보았다.<br> </p>
 

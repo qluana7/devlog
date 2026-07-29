@@ -68,7 +68,7 @@ var key = KeyInterop.KeyFromVirtualKey((int)Keys.Enter);
 <p id="SE-558e1710-ece7-4cc2-a91e-e8ba987e9c0d">이를 통해서 변환 작업을 끝냈다! 이제 keybd_event를 wpf에서도 사용할 수 있다!</p>
 <p id="SE-1b30fdf0-c9df-401d-aa89-31b7fb5d5f1c">​</p>
 
-<div class="embed-card"><a class="embed-card-link" href="https://docs.microsoft.com/ko-kr/dotnet/api/system.windows.forms.keys" target="_blank" rel="noreferrer noopener"><div class="embed-card-media"><img src="https://blog.kakaocdn.net/dna/cBTRsc/hyKvqT8Yi6/AAAAAAAAAAAAAAAAAAAAAJv_Lvaeaw01KQCsz9hEhfTKqp33KZQ64F0sQ9EWZecC/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1774969199&allow_ip=&allow_referer=&signature=pI3HqAeOsi8c2sIDkQ7s5s5TC%2Bw%3D" alt="Keys 열거형 (System.Windows.Forms)" loading="lazy" /></div><div class="embed-card-body"><p class="embed-card-title">Keys 열거형 (System.Windows.Forms)</p><p class="embed-card-desc">키 코드와 한정자를 지정합니다.Specifies key codes and modifiers.</p><p class="embed-card-host">docs.microsoft.com</p></div></a></div>
+<div class="embed-card"><a class="embed-card-link embed-card-no-media" href="https://learn.microsoft.com/ko-kr/dotnet/api/system.windows.forms.keys" target="_blank" rel="noreferrer noopener"><div class="embed-card-body"><p class="embed-card-title">Keys 열거형 (System.Windows.Forms)</p><p class="embed-card-desc">Windows Forms에서 사용하는 키 코드와 한정자에 대한 공식 문서입니다.</p><p class="embed-card-host">learn.microsoft.com</p></div></a></div>
 
 <p><br></p>
 <p id="SE-1cbab144-56ee-4e8c-8af3-8a2bda4eb5ee">Keys의 열거형은 docs에 잘 나와있으니 아래 링크를 확인해보자</p>

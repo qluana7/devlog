@@ -83,6 +83,11 @@
     outline: none;
   }
 
+  .spoiler:focus-visible {
+    outline: 2px solid rgba(45, 212, 191, 0.8);
+    outline-offset: 3px;
+  }
+
   .spoiler-block {
     display: block;
     margin: 0.8rem 0;
@@ -121,8 +126,6 @@
     margin: 0;
   }
 
-  .spoiler:hover .spoiler-content,
-  .spoiler:focus-visible .spoiler-content,
   .spoiler.revealed .spoiler-content {
     filter: blur(0);
   }
@@ -185,6 +188,14 @@
 
   .post-card {
     @apply rounded-lg p-5 bg-muted-surface/50 border border-border/20 transition hover:-translate-y-0.5;
+  }
+
+  .pagination-button {
+    @apply px-2 py-1 rounded border border-border/30 text-xs text-subtle hover:text-accent hover:border-accent/40;
+  }
+
+  .pagination-button.active {
+    @apply bg-accent text-header border-accent;
   }
 
   .tag-overflow-tooltip {

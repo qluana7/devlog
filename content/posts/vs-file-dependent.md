@@ -15,7 +15,7 @@ tags:
 <p>가끔 그럴때가 있다. 내가 만든 cs파일 (예를 들어 Form.Init)을 Form.Designer.cs 처럼 특정 폼에 종속시켜버리고 싶은 경우가 있다. 아래의 사진과 같이 말이다</p>
 <p>
 
-![](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/0b9ebd21bc2ef6390c9fdc6159b00891.png)
+![Visual Studio에서 파일이 나란히 표시된 상태](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/0b9ebd21bc2ef6390c9fdc6159b00891.png)
 
 </p>
 <p id="SE-427f3408-5097-4a1c-9215-ead68d914436">얼마나 불편해 보이는가!</p>
@@ -61,7 +61,7 @@ tags:
 <p id="SE-6525bd16-6e82-46ce-80d6-ad240ab79faf">이렇게 하면 종속이 완료된것이다</p>
 <p>
 
-![](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/be5fad155c8880cbd8c79dac7b73830e.png)
+![DependentUpon 설정 후 파일이 종속되어 표시된 상태](https://cdn.jsdelivr.net/gh/qluana7/devlog-assets@main/images/be5fad155c8880cbd8c79dac7b73830e.png)
 
 </p>
 <p id="SE-6c17dea1-4ba8-4199-b932-f4a2b0e62a7a">봐라, 얼마나 깔끔해졌는가!</p>
